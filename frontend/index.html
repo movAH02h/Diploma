@@ -4,12 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Транскрибация митингов</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div>
+    <div class="container">
         <h1>Загрузка аудио для транскрибации</h1>
-        <input type="file" id="audioFile">
-        <button onclick=""uploadFile()>Транскрибировать</button>
+        
+        <div class="file-input-wrapper">
+            <input type="file" id="audioFile" accept="audio/*">
+            <label for="audioFile" class="file-label">📁 Выбрать аудиофайл</label>
+            <div id="fileName" class="file-name"></div>
+        </div>
+        
+        <button onclick="uploadFile()">Транскрибировать</button>
         <div id="progress"></div>
         <div id="result"></div>
     </div>
