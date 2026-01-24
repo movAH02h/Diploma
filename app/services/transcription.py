@@ -1,8 +1,7 @@
 import torch
 from pydub import AudioSegment
 import nemo.collections.asr as nemo_asr
-from pyannote.audio import Pipeline
-from huggingface_hub import login
+from app.services.base_service import BaseService
 import soundfile as sf
 import json
 import os
@@ -11,7 +10,7 @@ from typing import List, Dict
 import numpy as np
 from app.config import settings
 
-class TranscriptionService:
+class TranscriptionService():
     def __init__(self, hf_token: str):
         if settings.LANGUAGE_MODEL == "Ru":
             print("Load Russian NeMo model...")
@@ -24,16 +23,8 @@ class TranscriptionService:
                 model_name="stt_en_conformer_ctc_medium"
             )
 
-        if hf_token:
-            print("Token was successfully downloaded from file!")
-            login(token=hf_token)
-        else:
-            raise Exception(f"Token not found!")
 
-        print("Load diarization model...")
-        self.diarization_pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization-3.1")
-
-    def process_audio(self, audio_path: str):
+    def _process(self, audio_path: str):
         print("Checking audio_path in system...")
         if not os.path.exists(audio_path):
             raise FileNotFoundError(f"Файл не найден: {audio_path}")

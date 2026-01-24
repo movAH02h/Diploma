@@ -15,9 +15,9 @@ async def transcribe_audio(file: UploadFile = File(...)):
     
     try:
         print("Create TranscriptionService...")
-        service = TranscriptionService(settings.HF_TOKEN)
+        service = TranscriptionService(settings.hf_token)
         print("Process audio...")
-        result = service.process_audio(temp_path)
+        result = service.process(temp_path)
 
         os.remove(temp_path)
         return JSONResponse(content=result)
