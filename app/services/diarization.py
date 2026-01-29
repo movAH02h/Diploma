@@ -18,3 +18,7 @@ class DiarizationService(BaseService):
 
     def _process(self, data: Dict[str, Any]) -> Dict[str, Any]:
         pass
+    
+
+    def _split_audio():
+        pass

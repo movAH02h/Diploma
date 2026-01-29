@@ -33,5 +33,3 @@ class BaseService(ABC):
     @abstractmethod
     def _process(self, data: Dict[str, Any]) -> Dict[str, Any]:
         pass
-
-    

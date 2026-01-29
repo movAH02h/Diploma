@@ -25,25 +25,6 @@ class TranscriptionService():
 
 
     def _process(self, audio_path: str):
-        print("Checking audio_path in system...")
-        if not os.path.exists(audio_path):
-            raise FileNotFoundError(f"Файл не найден: {audio_path}")
-
-        print("Загрузка аудио с помощью pydub...")
-        y, sr, duration = self._load_audio_pydub(audio_path=audio_path, target_sr=16000, mono=True)
-
-        if np.any(np.isnan(y)) or np.any(np.isinf(y)):
-            print("⚠️  Обнаружены NaN/Inf значения, исправляю...")
-            y = np.nan_to_num(y)
-
-        if len(y.shape) == 1:
-            waveform_tensor = torch.from_numpy(y).float().unsqueeze(0)
-        else:
-            waveform_tensor = torch.from_numpy(y).float()
-
-        if len(y) == 0:
-            raise ValueError("Аудиофайл пустой")
-
         print("Получение результатов диаризации...")
         outputs = self.diarization_pipeline({
             "waveform": waveform_tensor,
@@ -63,7 +44,6 @@ class TranscriptionService():
                 print(f"   {speaker}: {segment.start:.1f}s - {segment.end:.1f}s")
         except Exception as e:
             print(f"⚠️  Ошибка в itertracks: {e}")
-            # Пробуем другой способ итерации
             try:
                 for turn, _, speaker in predicted_diarization.itertracks(yield_label=True):
                     speakers.add(speaker)
