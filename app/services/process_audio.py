@@ -1,4 +1,6 @@
 from app.services.base_service import BaseService
+from pydub import AudioSegment
+import numpy as np
 
 class ProcessAudioService(BaseService):
     def __int__(self):
@@ -24,3 +26,33 @@ class ProcessAudioService(BaseService):
         if len(y) == 0:
             raise ValueError("Аудиофайл пустой")
         
+        return waveform_tensor, sr
+    
+
+    def _load_audio_pydub(self, audio_path: str, target_sr: int = 16000, mono: bool = True):
+        print("Загрузка из файла...")
+        audio = AudioSegment.from_file(audio_path)
+
+        if mono and audio.channels > 1:
+            audio = audio.set_channels(1)
+        
+        print("Преобразование в диапfзон [-1, 1]")
+        samples = np.array(audio.get_array_of_samples())
+
+        if audio.sample_width == 2:  # 16-bit
+            samples = samples.astype(np.float32) / 32768.0
+        elif audio.sample_width == 4:  # 32-bit
+            samples = samples.astype(np.float32) / 2147483648.0
+        elif audio.sample_width == 1:  # 8-bit
+            samples = (samples.astype(np.float32) - 128) / 128.0
+        else:
+            samples = samples.astype(np.float32)
+
+        print(f"Размерность аудио: {samples.shape}")
+        
+        print("Вычисление длительности аудио...")
+        sr = target_sr
+        audio_duration = len(samples) / sr
+    
+        print("Готово!")
+        return samples, sr, audio_duration

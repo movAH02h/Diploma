@@ -6,7 +6,7 @@ from app.config import settings
 
 router = APIRouter()
 
-@router.post("/transcribe/")
+@router.post("/process_audio")
 async def transcribe_audio(file: UploadFile = File(...)):
     temp_path = f"{settings.UPLOAD_FOLDER}/{file.filename}"
     with open(temp_path, "wb") as buffer:
