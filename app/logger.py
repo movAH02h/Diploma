@@ -2,25 +2,38 @@ import logging
 
 class Logger():
     def __init__(self):
-        self.logger = None # lazy initialization
+        self._logger  = None # lazy initialization
         self.logger_level = logging.INFO 
 
 
-    def change_logger_level(self, level: str) -> None:
+    def set_level(self, level: str) -> None:
         if level == "DEBUG":
             self.logger_level = logging.DEBUG
         elif level == "INFO":
             self.logger_level = logging.INFO
         elif level == "ERROR":
             self.logger_level = logging.ERROR
+        elif level == "WARNING":
+            self.logger_level = logging.WARNING
+        elif level == "CRITICAL":
+            self.logger_level =   logging.CRITICAL
 
         self.logger.setLevel(self.logger_level)
 
     @property
     def logger(self):
-        if self.logger is None:
-            self.logger = logging.getLogger(__name__)
-        return self.logger
+        if self._logger is None:
+            self._logger = logging.getLogger(__name__)
+            if not self._logger.handlers:
+                handler = logging.StreamHandler()
+                formatter = logging.Formatter(
+                    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+                )
+                handler.setFormatter(formatter)
+                self._logger.addHandler(handler)
+                self._logger.setLevel(self.logger_level)
+                self._logger.propagate = False
+        return self._logger
 
 
     def debug(self, message: str):

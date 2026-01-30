@@ -11,8 +11,8 @@ router = APIRouter()
 
 def create_pipeline():
     process_audio_service = ProcessAudioService()
-    transcription = TranscriptionService(settings.hf_token)
     diarization = DiarizationService()
+    transcription = TranscriptionService(settings.hf_token)
     
     # Setting pipeline's stages
     process_service.set_next(diarization).set_next(transcription)

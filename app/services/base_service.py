@@ -1,7 +1,7 @@
-from typing import Dict, Any, Optional
-from abc import ABC
-import logging
+from typing import Dict, Any
+from abc import ABC, abstractmethod
 from app.logger import logger
+
 
 class BaseService(ABC):
     def __init__(self, name: str = "No name"):

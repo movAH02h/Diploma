@@ -2,6 +2,8 @@ from app.services.base_service import BaseService
 from pydub import AudioSegment
 import numpy as np
 from app.logger import logger
+from typing import Dict, Any
+
 
 class ProcessAudioService(BaseService):    
     def process(self, data: Dict[str, Any]):

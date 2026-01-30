@@ -2,6 +2,8 @@ from pyannote.audio import Pipeline
 from huggingface_hub import login
 from app.services.base_service import BaseService
 from app.logger import logger
+from typing import Dict, Any
+
 
 class DiarizationService(BaseService):
     def __init__(self, hf_token: str):
