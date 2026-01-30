@@ -15,6 +15,9 @@ class ProcessAudioService(BaseService):
         logger.debug("Загрузка аудио с помощью pydub...")
         y, sr, duration = self._load_audio_pydub(audio_path=audio_path, target_sr=16000, mono=True)
 
+        if len(y) == 0:
+            raise ValueError("Аудиофайл пустой")
+
         if np.any(np.isnan(y)) or np.any(np.isinf(y)):
             logger.debug("Обнаружены NaN/Inf значения, исправляю...")
             y = np.nan_to_num(y)
@@ -23,9 +26,6 @@ class ProcessAudioService(BaseService):
             waveform_tensor = torch.from_numpy(y).float().unsqueeze(0)
         else:
             waveform_tensor = torch.from_numpy(y).float()
-
-        if len(y) == 0:
-            raise ValueError("Аудиофайл пустой")
         
         if "waveform_tensor" not in data:
             data["waveform_tensor"] = waveform_tensor
@@ -42,7 +42,7 @@ class ProcessAudioService(BaseService):
         if mono and audio.channels > 1:
             audio = audio.set_channels(1)
 
-        logger.debug("Преобразование в диапfзон [-1, 1]")
+        logger.debug("Преобразование в диапазон [-1, 1]")
         samples = np.array(audio.get_array_of_samples())
 
         if audio.sample_width == 2:  # 16-bit

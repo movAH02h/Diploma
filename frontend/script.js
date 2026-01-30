@@ -69,56 +69,9 @@ function displayResults(data) {
     const resultDiv = document.getElementById('result')
     let html = '<h2>📝 Результат транскрибации:</h2>'
 
-    if (data.result) {
-        html += `<div style="white-space: pre-wrap; padding: 15px; background: white; border-radius: 8px; border: 1px solid #ddd; line-height: 1.6;">
-                    ${data.result}
-                 </div>`
-    } else if (data.transcription && data.transcription.full_text) {
-        html += `<div style="white-space: pre-wrap; padding: 15px; background: white; border-radius: 8px; border: 1px solid #ddd; line-height: 1.6;">
-                    ${data.transcription.full_text}
-                 </div>`
-    } else if (data.transcription) {
-        html += `<div style="white-space: pre-wrap; padding: 15px; background: white; border-radius: 8px; border: 1px solid #ddd; line-height: 1.6;">
-                    ${JSON.stringify(data.transcription, null, 2)}
-                 </div>`
-    } else {
-        html += `<pre style="background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto;">
-                    ${JSON.stringify(data, null, 2)}
-                 </pre>`
-    }
+    html += `<div style="white-space: pre-wrap; padding: 15px; background: white; border-radius: 8px; border: 1px solid #ddd; line-height: 1.6;">
+                ${data.predicted_text}
+                </div>`
     
     resultDiv.innerHTML = html
 }
-
-// Дополнительно: можно добавить Drag & Drop
-document.addEventListener('DOMContentLoaded', function() {
-    const fileInput = document.getElementById('audioFile');
-    const fileLabel = document.querySelector('.file-label');
-    const container = document.querySelector('.container');
-    
-    // Подсветка при drag over
-    container.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        container.style.boxShadow = '0 0 0 3px #3498db';
-        fileLabel.style.background = '#2980b9';
-    });
-    
-    container.addEventListener('dragleave', function() {
-        container.style.boxShadow = '';
-        fileLabel.style.background = '#3498db';
-    });
-    
-    container.addEventListener('drop', function(e) {
-        e.preventDefault();
-        container.style.boxShadow = '';
-        fileLabel.style.background = '#3498db';
-        
-        if (e.dataTransfer.files.length) {
-            fileInput.files = e.dataTransfer.files;
-            
-            // Триггерим событие change
-            const event = new Event('change', { bubbles: true });
-            fileInput.dispatchEvent(event);
-        }
-    });
-});

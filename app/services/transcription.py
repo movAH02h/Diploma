@@ -22,6 +22,10 @@ class TranscriptionService():
 
 
     def _process(self, data: Dict[str, Any]):
+        if "waveform_tensor" in data:
+            y = data["waveform_tensor"]
+        if "sample_rate" in data:
+            sr = data["sample_rate"]
         temp_wav_path = tempfile.mktemp(suffix='.wav')
         sf.write(temp_wav_path, y, sr, subtype='PCM_16')
 
@@ -35,4 +39,7 @@ class TranscriptionService():
             predicted_text = str(full_text_hypothesis)
 
         logger.debug("Возвращаю результат...")
-        return {"result": predicted_text}
+        if "predicted_text" not in data:
+            data["predicted_text"] = predicted_text
+
+        return data

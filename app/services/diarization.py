@@ -20,6 +20,10 @@ class DiarizationService(BaseService):
 
     def _process(self, data: Dict[str, Any]) -> Dict[str, Any]:
         logger.debug("Получение результатов диаризации...")
+        if "waveform_tensor" in data:
+            waveform_tensor = data["waveform_tensor"]
+        if "sample_rate" in data:
+            sr = data["sample_rate"]
         outputs = self.diarization_pipeline({
             "waveform": waveform_tensor,
             "sample_rate": sr
@@ -46,7 +50,7 @@ class DiarizationService(BaseService):
                 pass
 
         logger.debug(f"\nSpeakers detected: {len(speakers)}")
+        if "speakers" not in data:
+            data["speakers"] = speakers
 
-
-    def _split_audio():
-        pass
+        return data
