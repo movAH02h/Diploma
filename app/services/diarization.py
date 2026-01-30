@@ -41,18 +41,38 @@ class DiarizationService(BaseService):
         try:
             for segment, track, speaker in predicted_diarization.itertracks(yield_label=True):
                 speakers.add(speaker)
+                diarization_segments.append({
+                    'speaker': speaker,
+                    'start': segment.start,
+                    'end': segment.end,
+                    'segment': segment
+                })
                 logger.debug(f"   {speaker}: {segment.start:.1f}s - {segment.end:.1f}s")
         except Exception as e:
             logger.debug(f"⚠️  Ошибка в itertracks: {e}")
             try:
                 for turn, _, speaker in predicted_diarization.itertracks(yield_label=True):
                     speakers.add(speaker)
+                    diarization_segments.append({
+                        'speaker': speaker,
+                        'start': turn.start,
+                        'end': turn.end,
+                        'segment': turn
+                    })
                     logger.debug(f"   {speaker}: {turn.start:.1f}s - {turn.end:.1f}s")
             except:
                 pass
 
         logger.debug(f"\nSpeakers detected: {len(speakers)}")
-        if "speakers" not in data:
-            data["speakers"] = speakers
+
+        data["diarization_segments"] = diarization_segments
+        data["speakers"] = list(speakers)
+        if "waveform_numpy" not in data:
+            if hasattr(waveform_tensor, 'numpy'):
+                data["waveform_numpy"] = waveform_tensor.numpy()
+            elif hasattr(waveform_tensor, 'detach'):
+                data["waveform_numpy"] = waveform_tensor.detach().cpu().numpy()
+            else:
+                data["waveform_numpy"] = waveform_tensor
 
         return data

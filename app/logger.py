@@ -1,9 +1,11 @@
 import logging
+from app.config import settings
+
 
 class Logger():
     def __init__(self):
         self._logger  = None # lazy initialization
-        self.logger_level = logging.INFO 
+        self.logger_level = settings.LOG_LEVEL
 
 
     def set_level(self, level: str) -> None:

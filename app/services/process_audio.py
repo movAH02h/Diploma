@@ -3,10 +3,13 @@ from pydub import AudioSegment
 import numpy as np
 from app.logger import logger
 from typing import Dict, Any
+import os
+import torch
 
 
 class ProcessAudioService(BaseService):    
     def _process(self, data: Dict[str, Any]):
+        logger.debug("Extract the audio_path...")
         if "audio_path" in data:
             audio_path = data["audio_path"]
 
@@ -14,7 +17,7 @@ class ProcessAudioService(BaseService):
         if not os.path.exists(audio_path):
             raise FileNotFoundError(f"Файл не найден: {audio_path}")
 
-        logger.debug("Загрузка аудио с помощью pydub...")
+        logger.debug("Load audio with pydub...")
         y, sr, duration = self._load_audio_pydub(audio_path=audio_path, target_sr=16000, mono=True)
 
         if len(y) == 0:

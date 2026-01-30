@@ -5,7 +5,7 @@ class Settings(BaseSettings):
     APP_NAME: str = "Speech Transcription API"
     LANGUAGE_MODEL: str = "En"
     UPLOAD_FOLDER: str = "audio_files"
-    LOG_LEVEL: str = "INFO" # LOG, DEBUG, ERROR
+    LOG_LEVEL: str = "DEBUG" # LOG, DEBUG, ERROR, WARNING, CRITICAL
     MAX_FILE_SIZE: int = 100 * 1024 * 1024
     ALLOWED_EXTENSIONS: set = {".wav", ".mp3", ".ogg", ".flac"}
 

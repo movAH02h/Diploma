@@ -15,14 +15,17 @@ def create_pipeline():
     transcription = TranscriptionService()
     
     # Setting pipeline's stages
-    process_service.set_next(diarization).set_next(transcription)
+    process_audio_service.set_next(diarization).set_next(transcription)
     
-    return process_service
+    return process_audio_service
 
 
 def create_start_dictionary(audio_path: str):
     dict = {}
+    
     dict["audio_path"] = audio_path
+
+    return dict
 
 
 @router.post("/process_audio")

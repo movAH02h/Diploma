@@ -5,8 +5,10 @@ import tempfile
 from typing import List, Dict, Any
 from app.config import settings
 from app.logger import logger
+import torch
+import numpy as np
 
-class TranscriptionService():
+class TranscriptionService(BaseService):
     def __init__(self):
         super().__init__("TranscriptionService")
         if settings.LANGUAGE_MODEL == "Ru":
@@ -22,24 +24,66 @@ class TranscriptionService():
 
 
     def _process(self, data: Dict[str, Any]):
-        if "waveform_tensor" in data:
-            y = data["waveform_tensor"]
-        if "sample_rate" in data:
-            sr = data["sample_rate"]
-        temp_wav_path = tempfile.mktemp(suffix='.wav')
-        sf.write(temp_wav_path, y, sr, subtype='PCM_16')
+        logger.debug("Extracting all from data...")
 
-        logger.debug("\nPerforming transcription...")
-        transcription = self.asr_model.transcribe([temp_wav_path])
-        full_text_hypothesis = transcription[0]
+        speakers = data["speakers"]
+        waveform_np = data["waveform_numpy"]
+        sr = data["sample_rate"]
+        segments = data["diarization_segments"]
 
-        if hasattr(full_text_hypothesis, 'text'):
-            predicted_text = full_text_hypothesis.text
+        if waveform_np.dim() == 2 and waveform_np.shape[0] == 1:
+            waveform_1d = waveform_np[0]
         else:
-            predicted_text = str(full_text_hypothesis)
+            waveform_1d = waveform_np
+        
+        transcriptions = []
 
-        logger.debug("Возвращаю результат...")
-        if "predicted_text" not in data:
-            data["predicted_text"] = predicted_text
+        for i, segment in enumerate(segments):
+            speaker = segment['speaker']
+            start_time = segment['start']
+            end_time = segment['end']
+
+            start_sample = max(0, start_sample)
+            end_sample = max(len(waveform_1d), end_sample)
+
+            if start_sample >= end_sample:
+                logger.debug("Invalid segment. Continue...")
+                continue
+            
+            segment_audio = waveform_1d[start_sample:end_sample]
+
+            segment_text = self._transcribe_segment(segment_audio, sr)
+
+            transcriptions.append({
+                'speaker': speaker,
+                'start': start,
+                'end': end,
+                'text': segment_text
+            })
+
+        speaker_transcriptions = {}
+        for tr in transcriptions:
+            speaker = tr['speaker']
+            if speaker not in speaker_transcriptions:
+                speaker_transcriptions[speaker] = []
+            
+            speaker_transcriptions[speaker].append(tr)
+        
+
+        final_transcriptions = {}
+        for speaker, segs in speaker_transcriptions.items():
+            segs.sort(key=lambda x: x['start'])
+            full_text = " ".join(seg['text'] for seg in segs)
+            final_transcriptions[speaker] = {
+                'full_text': full_text,
+                'segments': segs
+            }
+
+        data["transcriptions"] = final_transcriptions
+        logger.debug("Transcription completed !")
 
         return data
+    
+
+    def _transcribe_segment(self, audio_segment: np.ndarray, sr: int) -> str:
+        pass
