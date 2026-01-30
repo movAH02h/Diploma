@@ -27,7 +27,12 @@ class ProcessAudioService(BaseService):
         if len(y) == 0:
             raise ValueError("Аудиофайл пустой")
         
-        return waveform_tensor, sr
+        if "waveform_tensor" not in data:
+            data["waveform_tensor"] = waveform_tensor
+        if "sample_rate" not in data:
+            data["sample_rate"] = sr
+
+        return data
 
 
     def _load_audio_pydub(self, audio_path: str, target_sr: int = 16000, mono: bool = True):
