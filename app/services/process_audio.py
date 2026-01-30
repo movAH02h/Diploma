@@ -5,6 +5,9 @@ from app.logger import logger
 
 class ProcessAudioService(BaseService):    
     def process(self, data: Dict[str, Any]):
+        if "audio_path" in data:
+            audio_path = data["audio_path"]
+
         logger.debug("Checking audio_path in system...")
         if not os.path.exists(audio_path):
             raise FileNotFoundError(f"Файл не найден: {audio_path}")
@@ -25,7 +28,7 @@ class ProcessAudioService(BaseService):
             raise ValueError("Аудиофайл пустой")
         
         return waveform_tensor, sr
-    
+
 
     def _load_audio_pydub(self, audio_path: str, target_sr: int = 16000, mono: bool = True):
         logger.debug("Загрузка из файла...")
@@ -33,7 +36,7 @@ class ProcessAudioService(BaseService):
 
         if mono and audio.channels > 1:
             audio = audio.set_channels(1)
-        
+
         logger.debug("Преобразование в диапfзон [-1, 1]")
         samples = np.array(audio.get_array_of_samples())
 

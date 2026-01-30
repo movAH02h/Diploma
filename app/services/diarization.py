@@ -5,6 +5,7 @@ from app.logger import logger
 
 class DiarizationService(BaseService):
     def __init__(self, hf_token: str):
+        super.__init__("DiarizationService")
         if hf_token:
             logger.debug("Token was successfully downloaded from file!")
             login(token=hf_token)
@@ -15,7 +16,7 @@ class DiarizationService(BaseService):
         self.diarization_pipeline = Pipeline.from_pretrained(
             "pyannote/speaker-diarization-3.1"
         )
-    
+
 
     def _process(self, data: Dict[str, Any]) -> Dict[str, Any]:
         logger.debug("Получение результатов диаризации...")
@@ -45,7 +46,7 @@ class DiarizationService(BaseService):
                 pass
 
         logger.debug(f"\nSpeakers detected: {len(speakers)}")
-    
+
 
     def _split_audio():
         pass
