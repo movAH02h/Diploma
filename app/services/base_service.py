@@ -24,7 +24,7 @@ class BaseService(ABC):
             logger.debug(f"Переход к {self._next_service.name} сервису...")
             return self._next_service.process(result)
         return result
-    
+
 
     @abstractmethod
     def _process(self, data: Dict[str, Any]) -> Dict[str, Any]:

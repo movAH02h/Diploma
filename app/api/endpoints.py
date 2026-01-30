@@ -11,7 +11,9 @@ def create_pipeline():
     transcription = TranscriptionService(settings.hf_token)
     diarization = DiarizationService()
     
+    # Setting pipeline's stages
     process_service.set_next(diarization).set_next(transcription)
+    
     return process_service
 
 
@@ -21,7 +23,7 @@ async def transcribe_audio(file: UploadFile = File(...)):
     with open(temp_path, "wb") as buffer:
         content = await file.read()
         buffer.write(content)
-    
+
     try:
         print("Create services for pipeline...")
         pipeline = create_pipeline()
@@ -30,6 +32,6 @@ async def transcribe_audio(file: UploadFile = File(...)):
 
         os.remove(temp_path)
         return JSONResponse(content=result)
-        
+
     except Exception as e:
         raise HTTPException(500, f"Ошибка обработки {str(e)}")

@@ -8,13 +8,14 @@ from app.logger import logger
 
 class TranscriptionService():
     def __init__(self, hf_token: str):
+        super.__init__("TranscriptionService")
         if settings.LANGUAGE_MODEL == "Ru":
-            print("Load Russian NeMo model...")
+            logger.debug("Load Russian NeMo model...")
             self.asr_model = nemo_asr.models.ASRModel.from_pretrained(
                 model_name="stt_ru_conformer_ctc_large"
             )
         elif settings.LANGUAGE_MODEL == "En":
-            print("Load English NeMo model...")
+            logger.debug("Load English NeMo model...")
             self.asr_model = nemo_asr.models.ASRModel.from_pretrained(
                 model_name="stt_en_conformer_ctc_medium"
             )
@@ -24,7 +25,7 @@ class TranscriptionService():
         temp_wav_path = tempfile.mktemp(suffix='.wav')
         sf.write(temp_wav_path, y, sr, subtype='PCM_16')
 
-        print("\nPerforming transcription...")
+        logger.debug("\nPerforming transcription...")
         transcription = self.asr_model.transcribe([temp_wav_path])
         full_text_hypothesis = transcription[0]
 
@@ -33,5 +34,5 @@ class TranscriptionService():
         else:
             predicted_text = str(full_text_hypothesis)
 
-        print("Возвращаю результат...")
+        logger.debug("Возвращаю результат...")
         return {"result": predicted_text}

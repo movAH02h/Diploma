@@ -1,21 +1,19 @@
 from app.services.base_service import BaseService
 from pydub import AudioSegment
 import numpy as np
+from app.logger import logger
 
-class ProcessAudioService(BaseService):
-    def __int__(self):
-        self.name = serf.__name__
-    
-    def process(file_path: str):
-        print("Checking audio_path in system...")
+class ProcessAudioService(BaseService):    
+    def process(self, data: Dict[str, Any]):
+        logger.debug("Checking audio_path in system...")
         if not os.path.exists(audio_path):
             raise FileNotFoundError(f"Файл не найден: {audio_path}")
 
-        print("Загрузка аудио с помощью pydub...")
+        logger.debug("Загрузка аудио с помощью pydub...")
         y, sr, duration = self._load_audio_pydub(audio_path=audio_path, target_sr=16000, mono=True)
 
         if np.any(np.isnan(y)) or np.any(np.isinf(y)):
-            print("Обнаружены NaN/Inf значения, исправляю...")
+            logger.debug("Обнаружены NaN/Inf значения, исправляю...")
             y = np.nan_to_num(y)
 
         if len(y.shape) == 1:
@@ -30,13 +28,13 @@ class ProcessAudioService(BaseService):
     
 
     def _load_audio_pydub(self, audio_path: str, target_sr: int = 16000, mono: bool = True):
-        print("Загрузка из файла...")
+        logger.debug("Загрузка из файла...")
         audio = AudioSegment.from_file(audio_path)
 
         if mono and audio.channels > 1:
             audio = audio.set_channels(1)
         
-        print("Преобразование в диапfзон [-1, 1]")
+        logger.debug("Преобразование в диапfзон [-1, 1]")
         samples = np.array(audio.get_array_of_samples())
 
         if audio.sample_width == 2:  # 16-bit
@@ -48,11 +46,11 @@ class ProcessAudioService(BaseService):
         else:
             samples = samples.astype(np.float32)
 
-        print(f"Размерность аудио: {samples.shape}")
+        logger.debug(f"Размерность аудио: {samples.shape}")
         
-        print("Вычисление длительности аудио...")
+        logger.debug("Вычисление длительности аудио...")
         sr = target_sr
         audio_duration = len(samples) / sr
     
-        print("Готово!")
+        logger.debug("Готово!")
         return samples, sr, audio_duration
