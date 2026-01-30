@@ -36,7 +36,7 @@ async function uploadFile() {
 
     try {
         progressDiv.innerHTML = '📤 Отправка файла на сервер...'
-        const response = await fetch('http://localhost:8000/process_audio/', {
+        const response = await fetch('http://localhost:8000/process_audio', {
             method: 'POST',
             body: formData
         })

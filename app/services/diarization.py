@@ -7,7 +7,7 @@ from typing import Dict, Any
 
 class DiarizationService(BaseService):
     def __init__(self, hf_token: str):
-        super.__init__("DiarizationService")
+        super().__init__("DiarizationService")
         if hf_token:
             logger.debug("Token was successfully downloaded from file!")
             login(token=hf_token)

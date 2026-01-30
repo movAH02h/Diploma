@@ -6,7 +6,7 @@ from typing import Dict, Any
 
 
 class ProcessAudioService(BaseService):    
-    def process(self, data: Dict[str, Any]):
+    def _process(self, data: Dict[str, Any]):
         if "audio_path" in data:
             audio_path = data["audio_path"]
 

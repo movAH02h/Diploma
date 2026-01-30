@@ -7,8 +7,8 @@ from app.config import settings
 from app.logger import logger
 
 class TranscriptionService():
-    def __init__(self, hf_token: str):
-        super.__init__("TranscriptionService")
+    def __init__(self):
+        super().__init__("TranscriptionService")
         if settings.LANGUAGE_MODEL == "Ru":
             logger.debug("Load Russian NeMo model...")
             self.asr_model = nemo_asr.models.ASRModel.from_pretrained(

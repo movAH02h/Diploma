@@ -11,8 +11,8 @@ router = APIRouter()
 
 def create_pipeline():
     process_audio_service = ProcessAudioService()
-    diarization = DiarizationService()
-    transcription = TranscriptionService(settings.hf_token)
+    diarization = DiarizationService(settings.HF_TOKEN)
+    transcription = TranscriptionService()
     
     # Setting pipeline's stages
     process_service.set_next(diarization).set_next(transcription)
@@ -34,7 +34,7 @@ async def transcribe_audio(file: UploadFile = File(...)):
 
     try:
         logger.debug("Create dictionary with data...")
-        start_dict = create_start_dictionary()
+        start_dict = create_start_dictionary(temp_path)
         logger.debug("Create services for pipeline...")
         pipeline = create_pipeline()
         logger.debug("Process audio...")
