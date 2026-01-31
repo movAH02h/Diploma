@@ -44,7 +44,7 @@ class TranscriptionService(BaseService):
             end_time = segment['end']
 
             start_sample = max(0, start_sample)
-            end_sample = max(len(waveform_1d), end_sample)
+            end_sample = min(len(waveform_1d), end_sample)
 
             if start_sample >= end_sample:
                 logger.debug("Invalid segment. Continue...")
@@ -86,4 +86,24 @@ class TranscriptionService(BaseService):
     
 
     def _transcribe_segment(self, audio_segment: np.ndarray, sr: int) -> str:
-        pass
+        if len(audio_segment) == 0:
+            return ""
+        
+
+        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
+            temp_wav_path = tmp.name
+            audio_segment = np.clip(audio_segment)
+
+            wavfile.write(temp_wav_path, sr, np.int16(audio_segment * 32767))
+
+        try:
+            transcription = self.asr_model.transcribe([temp_wav_path])
+
+            text = str(transcription[0])
+
+            if hasattr(transcription[0], 'text'):
+                text = transcription[0].text
+            
+            return text.strip()
+        finally:
+            os.unlink(temp_wav_path)
