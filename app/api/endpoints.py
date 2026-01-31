@@ -43,8 +43,24 @@ async def transcribe_audio(file: UploadFile = File(...)):
         logger.debug("Process audio...")
         result = pipeline.process(start_dict)
 
+        response = {
+            "status": "success",
+            "filename": file.filename
+        }
+
+        if "transcriptions" in result:
+            response["transcriptions"] = result["transcriptions"]
+            response["speakers"] = result.get("speakers", [])
+
+            all_text = ""
+            for speaker, trans_data in result["transcriptions"].items():
+                all_text += f"{speaker}: {trans_data['full_text']}\n\n"
+            
+            response["full_text"] = all_text.strip()
+            logger.debug(f"Full text: {response['full_text']}")
+
         os.remove(temp_path)
-        return JSONResponse(content=result)
+        return JSONResponse(content=response)
 
     except Exception as e:
         raise HTTPException(500, f"Ошибка обработки {str(e)}")

@@ -4,7 +4,7 @@ from app.logger import logger
 
 
 class BaseService(ABC):
-    def __init__(self, name: str = "No name"):
+    def __init__(self, name: str="No name"):
         self.name = name or self.__class__.__name__
         self._next_service = None 
 

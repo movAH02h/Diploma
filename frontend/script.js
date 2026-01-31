@@ -48,7 +48,6 @@ async function uploadFile() {
 
         progressDiv.innerHTML = '⚙️ Обработка аудио...'
         const data = await response.json()
-        console.log('Данные получены:', data)
 
         displayResults(data);
         progressDiv.innerHTML = '✅ Обработка завершена!'
@@ -68,9 +67,9 @@ async function uploadFile() {
 function displayResults(data) {
     const resultDiv = document.getElementById('result')
     let html = '<h2>📝 Результат транскрибации:</h2>'
-
+    console.log('Финальные результаты: ', data.full_text)
     html += `<div style="white-space: pre-wrap; padding: 15px; background: white; border-radius: 8px; border: 1px solid #ddd; line-height: 1.6;">
-                ${data.predicted_text}
+                ${data.full_text}
                 </div>`
     
     resultDiv.innerHTML = html

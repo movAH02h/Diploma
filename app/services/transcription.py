@@ -6,7 +6,10 @@ from typing import List, Dict, Any
 from app.config import settings
 from app.logger import logger
 import torch
+from scipy.io import wavfile
 import numpy as np
+import os
+
 
 class TranscriptionService(BaseService):
     def __init__(self):
@@ -31,17 +34,22 @@ class TranscriptionService(BaseService):
         sr = data["sample_rate"]
         segments = data["diarization_segments"]
 
-        if waveform_np.dim() == 2 and waveform_np.shape[0] == 1:
+        logger.debug("Reduce waveform_np's demension...")
+        if waveform_np.ndim == 2 and waveform_np.shape[0] == 1:
             waveform_1d = waveform_np[0]
         else:
             waveform_1d = waveform_np
         
-        transcriptions = []
 
+        logger.debug("Transcript all segments...")
+        transcriptions = []
         for i, segment in enumerate(segments):
             speaker = segment['speaker']
             start_time = segment['start']
             end_time = segment['end']
+
+            start_sample = int(start_time * sr)
+            end_sample = int(end_time * sr)
 
             start_sample = max(0, start_sample)
             end_sample = min(len(waveform_1d), end_sample)
@@ -52,15 +60,17 @@ class TranscriptionService(BaseService):
             
             segment_audio = waveform_1d[start_sample:end_sample]
 
+            logger.debug(f"Transcribe {i} segment...")
             segment_text = self._transcribe_segment(segment_audio, sr)
 
             transcriptions.append({
                 'speaker': speaker,
-                'start': start,
-                'end': end,
+                'start': start_time,
+                'end': end_time,
                 'text': segment_text
             })
 
+        logger.debug("Connect speaker and his text...")
         speaker_transcriptions = {}
         for tr in transcriptions:
             speaker = tr['speaker']
@@ -70,6 +80,7 @@ class TranscriptionService(BaseService):
             speaker_transcriptions[speaker].append(tr)
         
 
+        logger.debug("Process final distribution of the transcripted segments...")
         final_transcriptions = {}
         for speaker, segs in speaker_transcriptions.items():
             segs.sort(key=lambda x: x['start'])
@@ -79,6 +90,7 @@ class TranscriptionService(BaseService):
                 'segments': segs
             }
 
+        logger.debug(f"Final transcriptions: {final_transcriptions}")
         data["transcriptions"] = final_transcriptions
         logger.debug("Transcription completed !")
 
@@ -92,7 +104,7 @@ class TranscriptionService(BaseService):
 
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
             temp_wav_path = tmp.name
-            audio_segment = np.clip(audio_segment)
+            audio_segment = np.clip(audio_segment, -1, 1)
 
             wavfile.write(temp_wav_path, sr, np.int16(audio_segment * 32767))
 
