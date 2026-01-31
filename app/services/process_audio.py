@@ -44,6 +44,9 @@ class ProcessAudioService(BaseService):
         logger.debug("Загрузка из файла...")
         audio = AudioSegment.from_file(audio_path)
 
+        if audio.frame_rate != target_sr:
+            audio = audio.set_frame_rate(target_sr)
+
         if mono and audio.channels > 1:
             audio = audio.set_channels(1)
 

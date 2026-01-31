@@ -3,6 +3,7 @@ from huggingface_hub import login
 from app.services.base_service import BaseService
 from app.logger import logger
 from typing import Dict, Any
+from app.config import settings
 
 
 class DiarizationService(BaseService):
@@ -40,6 +41,11 @@ class DiarizationService(BaseService):
         speakers = set()
         try:
             for segment, track, speaker in predicted_diarization.itertracks(yield_label=True):
+                duration = segment.end - segment.start
+                if duration < settings.MIN_SEGMENT_DURATION:
+                    logger.debug("Слишком короткий сегмент -> continue...")
+                    continue
+                
                 speakers.add(speaker)
                 diarization_segments.append({
                     'speaker': speaker,
@@ -49,19 +55,8 @@ class DiarizationService(BaseService):
                 })
                 logger.debug(f"   {speaker}: {segment.start:.1f}s - {segment.end:.1f}s")
         except Exception as e:
-            logger.debug(f"⚠️  Ошибка в itertracks: {e}")
-            try:
-                for turn, _, speaker in predicted_diarization.itertracks(yield_label=True):
-                    speakers.add(speaker)
-                    diarization_segments.append({
-                        'speaker': speaker,
-                        'start': turn.start,
-                        'end': turn.end,
-                        'segment': turn
-                    })
-                    logger.debug(f"   {speaker}: {turn.start:.1f}s - {turn.end:.1f}s")
-            except:
-                pass
+            logger.debug(f"Ошибка: {e}")
+            
 
         logger.debug(f"\nSpeakers detected: {len(speakers)}")
 

@@ -34,12 +34,15 @@ class TranscriptionService(BaseService):
         sr = data["sample_rate"]
         segments = data["diarization_segments"]
 
+        logger.debug("Check if the sample rate is 16000 Hz...")
+        if sr != 16000:
+            logger.debug(f"Sample rate is not 16000, but this value is recommended !")
+
         logger.debug("Reduce waveform_np's demension...")
         if waveform_np.ndim == 2 and waveform_np.shape[0] == 1:
             waveform_1d = waveform_np[0]
         else:
             waveform_1d = waveform_np
-        
 
         logger.debug("Transcript all segments...")
         transcriptions = []
@@ -47,6 +50,11 @@ class TranscriptionService(BaseService):
             speaker = segment['speaker']
             start_time = segment['start']
             end_time = segment['end']
+            duration = end_time - start_time
+
+            if duration < 0.5:
+                logger.debug("The segment is too short ! Continue...")
+                continue
 
             start_sample = int(start_time * sr)
             end_sample = int(end_time * sr)
@@ -57,7 +65,7 @@ class TranscriptionService(BaseService):
             if start_sample >= end_sample:
                 logger.debug("Invalid segment. Continue...")
                 continue
-            
+
             segment_audio = waveform_1d[start_sample:end_sample]
 
             logger.debug(f"Transcribe {i} segment...")
@@ -76,9 +84,9 @@ class TranscriptionService(BaseService):
             speaker = tr['speaker']
             if speaker not in speaker_transcriptions:
                 speaker_transcriptions[speaker] = []
-            
+
             speaker_transcriptions[speaker].append(tr)
-        
+
 
         logger.debug("Process final distribution of the transcripted segments...")
         final_transcriptions = {}
@@ -95,16 +103,25 @@ class TranscriptionService(BaseService):
         logger.debug("Transcription completed !")
 
         return data
-    
+
 
     def _transcribe_segment(self, audio_segment: np.ndarray, sr: int) -> str:
+        """ Transcribe particulary segment """
         if len(audio_segment) == 0:
             return ""
-        
+
+        max_amplitude = np.abs(audio_segment).max()
+        if max_amplitude > 1.0:
+            audio_segment = audio_segment / max_amplitude
+        elif max_amplitude < 0.5:
+            audio_segment = audio_segment * (0.7 / max_amplitude)
 
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
             temp_wav_path = tmp.name
-            audio_segment = np.clip(audio_segment, -1, 1)
+
+            audio_segment = np.clip(audio_segment, -1, 1) # Нормализация. Диапазон [-1, 1]
+
+            audio_int16 = np.int16(audio_segment * 32767) # Квантизация аудио
 
             wavfile.write(temp_wav_path, sr, np.int16(audio_segment * 32767))
 
@@ -115,7 +132,15 @@ class TranscriptionService(BaseService):
 
             if hasattr(transcription[0], 'text'):
                 text = transcription[0].text
+
+            text = text.strip()
             
-            return text.strip()
+            return ' '.join(text.split())
+        except Exception as e:
+            logger.debug(f"Ошибка транскрибации: {e} !")
+            return ""
         finally:
-            os.unlink(temp_wav_path)
+            try:
+                os.unlink(temp_wav_path)
+            except Exception as e:
+                logger.debug(f"Unable to delete {temp_wav_path} file !")
