@@ -10,5 +10,5 @@
 
 #### Сравнение моделей диаризации
 1. Результаты для Pyannote: https://colab.research.google.com/drive/1j0MZ67onV5o-nB59WAtviugh7QKwokz4?usp=sharing
-2. Результаты для NVIDIA NeMo: https://colab.research.google.com/drive/1QxiTAgz3z3wPc_gUD2CqKGFhe1GS6L4E?usp=sharing
+2. Результаты для NVIDIA NeMo: https://colab.research.google.com/drive/1kPN60q5kYNOA1UpgHUx02mKHl9PtWg8t?usp=sharing
 3. Сравнительный анализ обоих моделей: https://colab.research.google.com/drive/1dOhfLhyMGCacXMaxl2YACRttmiVAexf6?usp=sharing
