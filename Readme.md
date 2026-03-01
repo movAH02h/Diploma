@@ -9,6 +9,9 @@
 > uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 #### Сравнение моделей диаризации
-1. Результаты для Pyannote: https://colab.research.google.com/drive/1j0MZ67onV5o-nB59WAtviugh7QKwokz4?usp=sharing
-2. Результаты для NVIDIA NeMo: https://colab.research.google.com/drive/1kPN60q5kYNOA1UpgHUx02mKHl9PtWg8t?usp=sharing
-3. Сравнительный анализ обоих моделей: https://colab.research.google.com/drive/1dOhfLhyMGCacXMaxl2YACRttmiVAexf6?usp=sharing
+- Результаты для Pyannote: https://colab.research.google.com/drive/1j0MZ67onV5o-nB59WAtviugh7QKwokz4?usp=sharing
+- Результаты для NVIDIA NeMo: https://colab.research.google.com/drive/1kPN60q5kYNOA1UpgHUx02mKHl9PtWg8t?usp=sharing
+  - Используется модель vad_multilingual_marblenet в этапе VAD
+  - Используется модель titanet_large на этапе SpeakerEmbeddings
+  - Используется модель кластеризации + MSDD для лучших результатов при перекрытии речи, что характерно для митингов
+- Сравнительный анализ обоих моделей: https://colab.research.google.com/drive/1dOhfLhyMGCacXMaxl2YACRttmiVAexf6?usp=sharing
