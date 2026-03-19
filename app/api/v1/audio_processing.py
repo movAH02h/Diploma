@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from app.services.transcription import TranscriptionService
 from app.services.diarization import DiarizationService
@@ -12,7 +12,7 @@ router = APIRouter()
 
 @router.post("/process_audio")
 async def process_audio(file: UploadFile = File(...),
-                        audio_service: AudioProcessingService = Depends(get_audio_service)):
+                        audio_service: AudioProcessingService = Depends(get_audio_processing_service)):
     try:
         result = await audio_service.process_audio(file)
     except Exception as e:
