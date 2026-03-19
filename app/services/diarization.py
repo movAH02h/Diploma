@@ -3,7 +3,7 @@ from huggingface_hub import login
 from app.services.base_service import BaseService
 from app.logger import logger
 from typing import Dict, Any
-from app.config import settings
+from app.schemas import settings
 
 
 class DiarizationService(BaseService):

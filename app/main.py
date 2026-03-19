@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.endpoints import router as api_router
-from app.config import settings
+from app.schemas import settings
 import os
 
 app = FastAPI(title=settings.APP_NAME)

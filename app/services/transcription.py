@@ -3,7 +3,7 @@ from app.services.base_service import BaseService
 import soundfile as sf
 import tempfile
 from typing import List, Dict, Any
-from app.config import settings
+from app.schemas import settings
 from app.logger import logger
 import torch
 from scipy.io import wavfile

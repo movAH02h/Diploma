@@ -14,7 +14,6 @@ def create_pipeline():
     diarization = DiarizationService(settings.HF_TOKEN)
     transcription = TranscriptionService()
     
-    # Setting pipeline's stages
     process_audio_service.set_next(diarization).set_next(transcription)
     
     return process_audio_service
