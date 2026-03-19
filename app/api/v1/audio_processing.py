@@ -9,18 +9,10 @@ from app.logger import logger
 
 router = APIRouter()
 
-def create_pipeline():
-    process_audio_service = ProcessAudioService()
-    diarization = DiarizationService(settings.HF_TOKEN)
-    transcription = TranscriptionService()
-    
-    process_audio_service.set_next(diarization).set_next(transcription)
-    
-    return process_audio_service
-
 
 @router.post("/process_audio")
-async def process_audio(file: UploadFile = File(...)):
+async def process_audio(file: UploadFile = File(...),
+                        audio_service: AudioProcessingService = Depends(get_audio_service)):
     try:
         result = await audio_service.process_audio(file)
     except Exception as e:
