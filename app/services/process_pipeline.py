@@ -3,11 +3,13 @@ from typing import Any, Dict
 from fastapi import Depends
 from fastapi.responses import JSONResponse
 from app.services.base_service import BaseService
+from app.repository.audio import AudioRepository
 from app.logger import logger
 
 class ProcessPipeline(BaseService):
-    def __init__(self):
+    def __init__(self, audio_repo: AudioRepository):
         super().__init__("ProcessPipeline")
+        self.audio_repo = audio_repo
 
     async def process(self, data: Dict[str, Any]) -> Dict[str, Any]:
         logger.debug(f"Начало обработки {self.name}")
