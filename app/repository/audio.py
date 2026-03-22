@@ -13,7 +13,6 @@ class AudioRepository:
             )
         storage[file_name] = result_data
 
-
     def get_audio_result(self, file_name: str):
         if file_name not in storage:
             raise HTTPException(

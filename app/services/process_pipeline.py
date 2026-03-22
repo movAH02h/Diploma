@@ -51,6 +51,7 @@ class ProcessPipeline(BaseService):
                 response["full_text"] = all_text.strip()
                 logger.debug(f"Full text: {response['full_text']}")
 
+            self.audio_repo.save_audio_result(file.filename, response)
             return response
 
         except Exception as e:
