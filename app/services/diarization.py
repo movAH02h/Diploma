@@ -1,3 +1,4 @@
+import asyncio
 from pyannote.audio import Pipeline
 from huggingface_hub import login
 from app.services.base_service import BaseService
@@ -21,7 +22,7 @@ class DiarizationService(BaseService):
         )
 
 
-    def _process(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    async def _process(self, data: Dict[str, Any]) -> Dict[str, Any]:
         logger.debug("Получение результатов диаризации...")
         if "waveform_tensor" in data:
             waveform_tensor = data["waveform_tensor"]

@@ -1,3 +1,7 @@
+import asyncio
+import os
+import torch
+import numpy as np
 import nemo.collections.asr as nemo_asr
 from app.services.base_service import BaseService
 import soundfile as sf
@@ -5,10 +9,7 @@ import tempfile
 from typing import List, Dict, Any
 from app.schemas import settings
 from app.logger import logger
-import torch
 from scipy.io import wavfile
-import numpy as np
-import os
 
 
 class TranscriptionService(BaseService):
@@ -26,7 +27,7 @@ class TranscriptionService(BaseService):
             )
 
 
-    def _process(self, data: Dict[str, Any]):
+    async def _process(self, data: Dict[str, Any]):
         logger.debug("Extracting all from data...")
 
         speakers = data["speakers"]
@@ -69,7 +70,7 @@ class TranscriptionService(BaseService):
             segment_audio = waveform_1d[start_sample:end_sample]
 
             logger.debug(f"Transcribe {i} segment...")
-            segment_text = self._transcribe_segment(segment_audio, sr)
+            segment_text = await self._transcribe_segment(segment_audio, sr)
 
             transcriptions.append({
                 'speaker': speaker,
@@ -105,7 +106,7 @@ class TranscriptionService(BaseService):
         return data
 
 
-    def _transcribe_segment(self, audio_segment: np.ndarray, sr: int) -> str:
+    async def _transcribe_segment(self, audio_segment: np.ndarray, sr: int) -> str:
         """ Transcribe particulary segment """
         if len(audio_segment) == 0:
             return ""
@@ -126,7 +127,7 @@ class TranscriptionService(BaseService):
             wavfile.write(temp_wav_path, sr, np.int16(audio_segment * 32767))
 
         try:
-            transcription = self.asr_model.transcribe([temp_wav_path])
+            transcription = await asyncio.to_thread(self.asr_model.transcribe, [temp_wav_path])
 
             text = str(transcription[0])
 

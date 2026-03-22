@@ -1,10 +1,10 @@
-audio_files = {}
+from typing import Dict, Any, List
+from fastapi import HTTPException
+
+storage: Dict[str, Any] = {}
 
 
 class AudioRepository:
-    def __init__(self):
-        self.storage = {}
-
     def save_audio_result(self, file_name: str, result_data: Dist[str, Any]):
         if file_name in storage:
             raise HTTPException(
@@ -17,7 +17,7 @@ class AudioRepository:
     def get_audio_result(self, file_name: str):
         if file_name not in storage:
             raise HTTPException(
-                status_code=400,
+                status_code=404,
                 detail="No such file"
             )
         return storage[file_name]

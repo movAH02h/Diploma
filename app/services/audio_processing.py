@@ -8,17 +8,25 @@ import torch
 
 
 class ProcessAudioService(BaseService):
-    def _process(self, data):
+    def __init__(self):
+        super().__init__("ProcessAudioService")
+
+    async def _process(self, data):
         logger.debug("Extract the audio_path...")
-        if "audio_path" in data:
-            audio_path = data["audio_path"]
+        audio_path = data.get("audio_path")
+        if not audio_path:
+            raise ValueError("No audio_path in data")
 
         logger.debug("Checking audio_path in system...")
         if not os.path.exists(audio_path):
             raise FileNotFoundError(f"Файл не найден: {audio_path}")
 
         logger.debug("Load audio with pydub...")
-        y, sr, duration = self._load_audio_pydub(audio_path=audio_path, target_sr=16000, mono=True)
+        y, sr, duration = self._load_audio_pydub(
+            audio_path=audio_path,
+            target_sr=16000,
+            mono=True
+        )
 
         if len(y) == 0:
             raise ValueError("Аудиофайл пустой")
