@@ -2,10 +2,10 @@ from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from app.services.transcription import TranscriptionService
 from app.services.diarization import DiarizationService
-from app.services.process_audio import ProcessAudioService
+from app.services.audio_processing import ProcessAudioService
 from app.services.dependencies import get_audio_pipeline
 import os
-from app.config import settings
+from app.schemas import settings
 from app.logger import logger
 
 router = APIRouter()
@@ -15,6 +15,11 @@ router = APIRouter()
 async def process_audio(file: UploadFile = File(...), audio_pipeline = Depends(get_audio_pipeline)):
     temp_path = f"{settings.UPLOAD_FOLDER}/{file.filename}"
     try:
+        logger.debug("Save loaded file into temp folder...")
+        with open(temp_path, "wb") as buffer:
+            content = await file.read()
+            buffer.write(content)
+
         logger.debug("Create dictionary with data...")
         start_dict = {
             "audio_path": temp_path

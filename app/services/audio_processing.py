@@ -9,9 +9,6 @@ import torch
 
 class ProcessAudioService(BaseService):
     def _process(self, data):
-        with open(temp_path, "wb") as buffer:
-            content = await file.read()
-            buffer.write(content)
         logger.debug("Extract the audio_path...")
         if "audio_path" in data:
             audio_path = data["audio_path"]
