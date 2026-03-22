@@ -5,7 +5,7 @@ storage: Dict[str, Any] = {}
 
 
 class AudioRepository:
-    def save_audio_result(self, file_name: str, result_data: Dist[str, Any]):
+    def save_audio_result(self, file_name: str, result_data: Dict[str, Any]):
         if file_name in storage:
             raise HTTPException(
                 status_code=400,

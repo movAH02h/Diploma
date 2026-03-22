@@ -24,8 +24,8 @@ def get_transcription_service() -> TranscriptionService:
     return TranscriptionService()
 
 
-def get_process_pipeline() -> ProcessPipeline:
-    return ProcessPipeline()
+def get_process_pipeline(repo: AudioRepository = Depends(get_audio_repository)) -> ProcessPipeline:
+    return ProcessPipeline(audio_repo=repo)
 
 
 def get_audio_pipeline(
