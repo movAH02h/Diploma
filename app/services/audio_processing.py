@@ -7,19 +7,11 @@ import os
 import torch
 
 
-class AudioProcessingService(BaseService):
-    def _create_pipeline(self):
-        process_audio_service = ProcessAudioService()
-        diarization = DiarizationService(settings.HF_TOKEN)
-        transcription = TranscriptionService()
-        
-        process_audio_service.set_next(diarization).set_next(transcription)
-        
-        return process_audio_service
-
-    def _process()
-
-    def _process(self, data: Dict[str, Any]):
+class ProcessAudioService(BaseService):
+    def _process(self, data):
+        with open(temp_path, "wb") as buffer:
+            content = await file.read()
+            buffer.write(content)
         logger.debug("Extract the audio_path...")
         if "audio_path" in data:
             audio_path = data["audio_path"]

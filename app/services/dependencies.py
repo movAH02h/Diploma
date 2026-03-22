@@ -5,7 +5,6 @@ from app.schemas import settings
 
 
 def get_audio_processing_service() -> AudioProcessingService:
-    # ...
     return AudioProcessingService()
 
 
@@ -18,7 +17,7 @@ def get_transcription_service() -> TranscriptionService:
 
 
 def get_audio_pipeline(
-    process_audio: AudioProcessingService = Depends(get_audio_processing_service)
+    process_audio: AudioProcessingService = Depends(get_audio_processing_service),
     diarization: DiarizationService = Depends(get_diarization_service),
     transcription: TranscriptionService = Depends(get_transcription_service)
 ) -> BaseService:
