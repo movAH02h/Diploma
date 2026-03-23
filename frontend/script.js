@@ -7,7 +7,7 @@ document.getElementById('audioFile').addEventListener('change', function(e) {
         const fileName = file.name.length > 30 ? 
             file.name.substring(0, 30) + '...' : file.name;
         
-        fileNameDiv.innerHTML = `Выбран файл: <span>${fileName}</span> (${fileSizeMB} MB)`;
+        fileNameDiv.innerHTML = `The file is selected: <span>${fileName}</span> (${fileSizeMB} MB)`;
         fileNameDiv.className = 'file-name show';
     } else {
         fileNameDiv.innerHTML = '';
@@ -22,19 +22,20 @@ async function uploadFile() {
     const fileNameDiv = document.getElementById('fileName')
 
     if (!fileInput.files[0]) {
-        alert('Пожалуйста, выберите аудио файл!')
+        alert('Please, select the audio file!')
         return;
     }
 
     const formData = new FormData();
     formData.append('file', fileInput.files[0])
     
-    progressDiv.innerHTML = 'Подготовка...'
+    progressDiv.innerHTML = 'Preparation...'
     resultDiv.innerHTML = ''
     fileNameDiv.className = 'file-name'
 
     try {
-        progressDiv.innerHTML = '📤 Отправка файла на сервер...'
+        progressDiv.innerHTML = '⚙️ Audio Processing...'
+        await new Promise(resolve => requestAnimationFrame(resolve))
         const response = await fetch('http://localhost:8000/process_audio', {
             method: 'POST',
             body: formData
@@ -42,26 +43,24 @@ async function uploadFile() {
 
         if (!response.ok) {
             const errorText = await response.text()
-            throw new Error(`Ошибка сервера ${response.status}: ${errorText}`)
+            throw new Error(`Server error ${response.status}: ${errorText}`)
         }
-
-        progressDiv.innerHTML = '⚙️ Обработка аудио...'
         const data = await response.json()
 
         displayResults(data);
-        progressDiv.innerHTML = '✅ Обработка завершена!'
+        progressDiv.innerHTML = '✅ Processing completed!'
         
     } catch (error) {
-        console.error('Ошибка:', error)
-        progressDiv.innerHTML = '❌ Ошибка'
+        console.error('Error:', error)
+        progressDiv.innerHTML = '❌ Error'
         fileNameDiv.className = 'file-name show'
     }
 }
 
 function displayResults(data) {
     const resultDiv = document.getElementById('result')
-    let html = '<h2>📝 Результат транскрибации:</h2>'
-    console.log('Финальные результаты: ', data.full_text)
+    let html = '<h2>📝 Transcription result:</h2>'
+    console.log('Final results: ', data.full_text)
     html += `<div style="white-space: pre-wrap; padding: 15px; background: white; border-radius: 8px; border: 1px solid #ddd; line-height: 1.6;">
                 ${data.full_text}
                 </div>`

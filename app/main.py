@@ -31,9 +31,9 @@ app.include_router(results_processing_router)
 
 frontend_path = os.path.join(os.path.dirname(__file__), "../frontend")
 if os.path.exists(frontend_path):
-    print(f"Найдена папка с frontend: {frontend_path}")
+    print(f"Folder with frontend found: {frontend_path}")
 else:
-    print(f"Папка {frontend_path} не найдена")
+    print(f"Folder {frontend_path} not found")
 
 if os.path.exists(frontend_path):
     app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")

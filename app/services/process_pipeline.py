@@ -12,9 +12,9 @@ class ProcessPipeline(BaseService):
         self.audio_repo = audio_repo
 
     async def process(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        logger.debug(f"Начало обработки {self.name}")
+        logger.debug(f"Start of processing {self.name}")
         result = await self._process(data)
-        logger.debug(f"Конец обработки {self.name}")
+        logger.debug(f"End of processing {self.name}")
         return result
 
     async def _process(self, data: Dict[str, Any]):
@@ -59,7 +59,7 @@ class ProcessPipeline(BaseService):
 
         except Exception as e:
             logger.error(f"ProcessPipeline error: {e}")
-            raise HTTPException(500, f"Ошибка обработки {str(e)}")
+            raise HTTPException(500, f"Processing error {str(e)}")
         finally:
             if os.path.exists(audio_path):
                 os.remove(audio_path)

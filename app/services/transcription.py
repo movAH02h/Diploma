@@ -96,8 +96,7 @@ class TranscriptionService(BaseService):
 
 
     async def _transcribe_segment(self, audio_segment: np.ndarray, sr: int) -> str:
-        """ Transcribe particulary segment """
-        logger.debug("Getting Whisper model...")
+        logger.debug("Obtaining Whisper model...")
         whisper_model = model_manager.get_whisper()
         if len(audio_segment) == 0:
             return ""

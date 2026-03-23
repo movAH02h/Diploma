@@ -12,13 +12,13 @@ class DiarizationService(BaseService):
         super().__init__("DiarizationService")
 
     async def _process(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        logger.debug("Получение модели диаризации...")
+        logger.debug("Obtaining a diarization model...")
         diarization_pipeline = model_manager.get_diarization()
-        logger.debug("Получение результатов диаризации...")
         if "waveform_tensor" in data:
             waveform_tensor = data["waveform_tensor"]
         if "sample_rate" in data:
             sr = data["sample_rate"]
+        logger.debug("Obtaining diarization results...")
         outputs = diarization_pipeline({
             "waveform": waveform_tensor,
             "sample_rate": sr
@@ -26,14 +26,14 @@ class DiarizationService(BaseService):
 
         predicted_diarization = outputs.speaker_diarization
 
-        logger.debug("Разделение аудиозаписи по сегментам...")
+        logger.debug("Dividing the audio recording into segments...")
         diarization_segments = []
         speakers = set()
         try:
             for segment, track, speaker in predicted_diarization.itertracks(yield_label=True):
                 duration = segment.end - segment.start
                 if duration < settings.MIN_SEGMENT_DURATION:
-                    logger.debug("Слишком короткий сегмент -> continue...")
+                    logger.debug("Too short segment -> continue...")
                     continue
                 
                 speakers.add(speaker)
@@ -45,7 +45,7 @@ class DiarizationService(BaseService):
                 })
                 logger.debug(f"   {speaker}: {segment.start:.1f}s - {segment.end:.1f}s")
         except Exception as e:
-            logger.debug(f"Ошибка: {e}")
+            logger.debug(f"Error: {e}")
             
 
         logger.debug(f"\nSpeakers detected: {len(speakers)}")

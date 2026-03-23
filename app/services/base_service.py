@@ -16,12 +16,12 @@ class BaseService(ABC):
 
 
     async def process(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        logger.debug(f"Начало обработки {self.name}")
+        logger.debug(f"Start of processing {self.name}")
         result = await self._process(data)
-        logger.debug(f"Конец обработки {self.name}")
+        logger.debug(f"End of processing {self.name}")
 
         if self._next_service:
-            logger.debug(f"Переход к {self._next_service.name} сервису...")
+            logger.debug(f"Switching to the {self._next_service.name} service...")
             return await self._next_service.process(result)
         return result
 
