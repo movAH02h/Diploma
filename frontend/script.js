@@ -1,4 +1,3 @@
-// Добавляем обработчик для отображения выбранного файла
 document.getElementById('audioFile').addEventListener('change', function(e) {
     const fileNameDiv = document.getElementById('fileName');
     
@@ -32,7 +31,7 @@ async function uploadFile() {
     
     progressDiv.innerHTML = 'Подготовка...'
     resultDiv.innerHTML = ''
-    fileNameDiv.className = 'file-name' // Скрываем имя файла при отправке
+    fileNameDiv.className = 'file-name'
 
     try {
         progressDiv.innerHTML = '📤 Отправка файла на сервер...'
@@ -54,13 +53,8 @@ async function uploadFile() {
         
     } catch (error) {
         console.error('Ошибка:', error)
-        if (resultDiv) {
-            resultDiv.innerHTML = `<div style="color: red; padding: 10px; border: 1px solid red; border-radius: 5px;">
-                <strong>Ошибка:</strong> ${error.message}
-            </div>`
-        }
-        progressDiv.innerHTML = '❌ Ошибка: ' + error.message
-        fileNameDiv.className = 'file-name show' // Показываем имя файла снова
+        progressDiv.innerHTML = '❌ Ошибка'
+        fileNameDiv.className = 'file-name show'
     }
 }
 
