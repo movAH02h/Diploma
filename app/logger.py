@@ -4,7 +4,7 @@ from app.schemas import settings
 
 class Logger():
     def __init__(self):
-        self._logger  = None # lazy initialization
+        self._logger  = None
         self.logger_level = settings.LOG_LEVEL
 
 

@@ -3,26 +3,19 @@ import os
 import torch
 import numpy as np
 import whisper
-from app.services.base_service import BaseService
 import soundfile as sf
 import tempfile
 from typing import List, Dict, Any
 from app.schemas import settings
 from app.logger import logger
 from scipy.io import wavfile
+from app.services.base_service import BaseService
+from app.models import model_manager
 
 
 class TranscriptionService(BaseService):
     def __init__(self):
         super().__init__("TranscriptionService")
-        model_name = settings.WHISPER_MODEL
-        logger.debug(f"Loading Whisper model {model_name}")
-        self.whisper_model = whisper.load_model(model_name)
-        if torch.cuda.is_available():
-            logger.debug("Whisper model loaded on GPU")
-            self.whisper_model = self.whisper_model.cuda()
-        else:
-            logger.debug("Whisper model loaded on CPU")
 
     async def _process(self, data: Dict[str, Any]):
         logger.debug("Extracting all from data...")
@@ -104,6 +97,8 @@ class TranscriptionService(BaseService):
 
     async def _transcribe_segment(self, audio_segment: np.ndarray, sr: int) -> str:
         """ Transcribe particulary segment """
+        logger.debug("Getting Whisper model...")
+        whisper_model = model_manager.get_whisper()
         if len(audio_segment) == 0:
             return ""
 
@@ -113,14 +108,14 @@ class TranscriptionService(BaseService):
         elif max_amplitude < 0.5:
             audio_segment = audio_segment * (0.7 / max_amplitude)
 
-        audio_segment = np.clip(audio_segment, -1, 1) # Нормализация. Диапазон [-1, 1]
+        audio_segment = np.clip(audio_segment, -1, 1)
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
             temp_wav_path = tmp.name
             wavfile.write(temp_wav_path, sr, np.int16(audio_segment * 32767))
 
         try:
             transcription = await asyncio.to_thread(
-                self.whisper_model.transcribe,
+                whisper_model.transcribe,
                 temp_wav_path,
                 language="en",
                 task="transcribe",

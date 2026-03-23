@@ -1,34 +1,25 @@
 import asyncio
 from pyannote.audio import Pipeline
 from huggingface_hub import login
+from typing import Dict, Any
 from app.services.base_service import BaseService
 from app.logger import logger
-from typing import Dict, Any
 from app.schemas import settings
-
+from app.models import model_manager
 
 class DiarizationService(BaseService):
     def __init__(self, hf_token: str):
         super().__init__("DiarizationService")
-        if hf_token:
-            logger.debug("Token was successfully downloaded from file!")
-            login(token=hf_token)
-        else:
-            raise Exception(f"Token not found!")
-
-        logger.debug("Load diarization model...")
-        self.diarization_pipeline = Pipeline.from_pretrained(
-            "pyannote/speaker-diarization-3.1"
-        )
-
 
     async def _process(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        logger.debug("Получение модели диаризации...")
+        diarization_pipeline = model_manager.get_diarization()
         logger.debug("Получение результатов диаризации...")
         if "waveform_tensor" in data:
             waveform_tensor = data["waveform_tensor"]
         if "sample_rate" in data:
             sr = data["sample_rate"]
-        outputs = self.diarization_pipeline({
+        outputs = diarization_pipeline({
             "waveform": waveform_tensor,
             "sample_rate": sr
         })
