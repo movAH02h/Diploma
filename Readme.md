@@ -17,4 +17,4 @@
 - Оптимизация параметров Pyannote: https://colab.research.google.com/drive/1DJ4r51UBc7wQ2luYArCzFlGdzgRj695g?usp=sharing
 - Оптимизация параметров NeMo: https://colab.research.google.com/drive/1Dla6Il9qP3qLunkl28Cd8KMEIaj2N0PD?usp=sharing
 - Дообучение Pyannote: https://colab.research.google.com/drive/1FUUZv7zvO44L1sXYSR0sUb10H40QlmIn?usp=sharing
-- Дообучение NeMo: В процессе...
+- Дообучение NeMo: ?
