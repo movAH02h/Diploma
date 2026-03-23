@@ -26,10 +26,8 @@ class DiarizationService(BaseService):
 
         predicted_diarization = outputs.speaker_diarization
 
-        diarization_segments = []
-        speakers = set()
-
         logger.debug("Разделение аудиозаписи по сегментам...")
+        diarization_segments = []
         speakers = set()
         try:
             for segment, track, speaker in predicted_diarization.itertracks(yield_label=True):

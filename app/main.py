@@ -1,10 +1,11 @@
+import os
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.audio_processing import router as audio_processing_router
+from app.api.v1.results_processing import router as results_processing_router
 from app.schemas import settings
-import os
-from contextlib import asynccontextmanager
 from app.models import model_manager
 
 @asynccontextmanager
@@ -26,6 +27,7 @@ app.add_middleware(
 )
 
 app.include_router(audio_processing_router)
+app.include_router(results_processing_router)
 
 frontend_path = os.path.join(os.path.dirname(__file__), "../frontend")
 if os.path.exists(frontend_path):

@@ -22,4 +22,4 @@ class AudioRepository:
         return storage[file_name]
 
     def get_all_audio_results(self) -> List[Dict[str, Any]]:
-        return list(audio_files.values())
+        return list(storage.values())

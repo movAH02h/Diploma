@@ -70,13 +70,11 @@ class ProcessAudioService(BaseService):
         if audio.sample_width == 2:  # 16-bit
             samples = samples.astype(np.float32) / 32768.0
         elif audio.sample_width == 4:  # 32-bit
-            samples = samples.astype(np.float32) / 2147483648.0
+            samples = samples.astype(np.float32) / 2147483648.0 
         elif audio.sample_width == 1:  # 8-bit
             samples = (samples.astype(np.float32) - 128) / 128.0
         else:
             samples = samples.astype(np.float32)
-
-        logger.debug(f"Размерность аудио: {samples.shape}")
         
         logger.debug("Вычисление длительности аудио...")
         sr = target_sr
