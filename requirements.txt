@@ -7,7 +7,6 @@ numpy>=1.21.0
 
 # Обработка аудио и речь
 whisper-openai>=1.0.0
-nemo_toolkit[asr]>=1.18.0
 soundfile>=0.10.0
 
 # Диаризация

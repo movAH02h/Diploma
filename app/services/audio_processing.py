@@ -1,11 +1,11 @@
-from app.services.base_service import BaseService
-from pydub import AudioSegment
-import numpy as np
-from app.logger import logger
-from typing import Dict, Any
 import os
 import torch
-
+import numpy as np
+from typing import Dict, Any
+from pydub import AudioSegment
+from app.services.base_service import BaseService
+from app.logger import logger
+from app.schemas import settings
 
 class ProcessAudioService(BaseService):
     def __init__(self):
@@ -21,6 +21,12 @@ class ProcessAudioService(BaseService):
         if not os.path.exists(audio_path):
             raise FileNotFoundError(f"Файл не найден: {audio_path}")
 
+        logger.debug("Check the file size...")
+        file_size = os.path.getsize(audio_path)
+        if file_size > settings.MAX_FILE_SIZE:
+            raise ValueError(f"Размер файла превышает 2 МБ (Фактический размер файла: {file_size / 1024 / 1024:.2f} МБ)")
+        else:
+            logger.debug("File size if appropriate! Continue...")
         logger.debug("Load audio with pydub...")
         y, sr, duration = self._load_audio_pydub(
             audio_path=audio_path,

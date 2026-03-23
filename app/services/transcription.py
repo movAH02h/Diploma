@@ -2,7 +2,7 @@ import asyncio
 import os
 import torch
 import numpy as np
-import nemo.collections.asr as nemo_asr
+import whisper
 from app.services.base_service import BaseService
 import soundfile as sf
 import tempfile
@@ -15,21 +15,17 @@ from scipy.io import wavfile
 class TranscriptionService(BaseService):
     def __init__(self):
         super().__init__("TranscriptionService")
-        if settings.LANGUAGE_MODEL == "Ru":
-            logger.debug("Load Russian NeMo model...")
-            self.asr_model = nemo_asr.models.ASRModel.from_pretrained(
-                model_name="stt_ru_conformer_ctc_large"
-            )
-        elif settings.LANGUAGE_MODEL == "En":
-            logger.debug("Load English NeMo model...")
-            self.asr_model = nemo_asr.models.ASRModel.from_pretrained(
-                model_name="stt_en_conformer_ctc_medium"
-            )
-
+        model_name = settings.WHISPER_MODEL
+        logger.debug(f"Loading Whisper model {model_name}")
+        self.whisper_model = whisper.load_model(model_name)
+        if torch.cuda.is_available():
+            logger.debug("Whisper model loaded on GPU")
+            self.whisper_model = self.whisper_model.cuda()
+        else:
+            logger.debug("Whisper model loaded on CPU")
 
     async def _process(self, data: Dict[str, Any]):
         logger.debug("Extracting all from data...")
-
         speakers = data["speakers"]
         waveform_np = data["waveform_numpy"]
         sr = data["sample_rate"]
@@ -117,28 +113,24 @@ class TranscriptionService(BaseService):
         elif max_amplitude < 0.5:
             audio_segment = audio_segment * (0.7 / max_amplitude)
 
+        audio_segment = np.clip(audio_segment, -1, 1) # Нормализация. Диапазон [-1, 1]
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
             temp_wav_path = tmp.name
-
-            audio_segment = np.clip(audio_segment, -1, 1) # Нормализация. Диапазон [-1, 1]
-
-            audio_int16 = np.int16(audio_segment * 32767) # Квантизация аудио
-
             wavfile.write(temp_wav_path, sr, np.int16(audio_segment * 32767))
 
         try:
-            transcription = await asyncio.to_thread(self.asr_model.transcribe, [temp_wav_path])
+            transcription = await asyncio.to_thread(
+                self.whisper_model.transcribe,
+                temp_wav_path,
+                language="en",
+                task="transcribe",
+                fp16=torch.cuda.is_available()
+            )
 
-            text = str(transcription[0])
-
-            if hasattr(transcription[0], 'text'):
-                text = transcription[0].text
-
-            text = text.strip()
-            
+            text = transcription["text"].strip()            
             return ' '.join(text.split())
         except Exception as e:
-            logger.debug(f"Ошибка транскрибации: {e} !")
+            logger.debug(f"Whisper transcription error: {e} !")
             return ""
         finally:
             try:
