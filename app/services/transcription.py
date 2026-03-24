@@ -34,8 +34,10 @@ class TranscriptionService(BaseService):
         else:
             waveform_1d = waveform_np
 
-        logger.debug("Transcript all segments...")
+        logger.debug("Obtaining Whisper model...")
+        whisper_model = model_manager.get_whisper()
         transcriptions = []
+        logger.debug("Transcript all segments...")
         for i, segment in enumerate(segments):
             speaker = segment['speaker']
             start_time = segment['start']
@@ -59,7 +61,7 @@ class TranscriptionService(BaseService):
             segment_audio = waveform_1d[start_sample:end_sample]
 
             logger.debug(f"Transcribe {i} segment...")
-            segment_text = await self._transcribe_segment(segment_audio, sr)
+            segment_text = await self._transcribe_segment(whisper_model, segment_audio, sr)
 
             transcriptions.append({
                 'speaker': speaker,
@@ -95,9 +97,7 @@ class TranscriptionService(BaseService):
         return data
 
 
-    async def _transcribe_segment(self, audio_segment: np.ndarray, sr: int) -> str:
-        logger.debug("Obtaining Whisper model...")
-        whisper_model = model_manager.get_whisper()
+    async def _transcribe_segment(self, whisper_model, audio_segment: np.ndarray, sr: int) -> str:
         if len(audio_segment) == 0:
             return ""
 
