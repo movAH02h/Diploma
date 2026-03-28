@@ -4,7 +4,8 @@ WORKDIR /app
 
 # Копируем и устанавливаем зависимости
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --timeout=100 --retries=5 -r requirements.txt && pip uninstall -y torchcodec || true
+RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
 
 # Копируем весь код приложения
 COPY . .
