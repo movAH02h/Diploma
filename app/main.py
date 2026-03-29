@@ -7,19 +7,22 @@ from app.api.v1.audio_processing import router as audio_processing_router
 from app.api.v1.results_processing import router as results_processing_router
 from app.schemas import settings
 from app.models import model_manager
-from dotenv import load_dotenv
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    load_dotenv()
     os.makedirs(settings.UPLOAD_FOLDER, exist_ok=True)
     model_manager.load()
     yield
     model_manager.unload()
 
 
-app = FastAPI(title=settings.APP_NAME, lifespan=lifespan)
+app = FastAPI(
+    title=settings.APP_NAME,
+    lifespan=lifespan,
+    docs_url=None if settings.IS_PRODUCTION else "/docs",
+    redoc_url=None if settings.IS_PRODUCTION else "/redoc"
+)
 
 app.add_middleware(
     CORSMiddleware,
