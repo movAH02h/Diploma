@@ -1,6 +1,7 @@
 import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.audio_processing import router as audio_processing_router
@@ -23,6 +24,12 @@ app = FastAPI(
     docs_url=None if settings.IS_PRODUCTION else "/docs",
     redoc_url=None if settings.IS_PRODUCTION else "/redoc"
 )
+
+
+@app.get('/favicon.ico', include_in_schema=False)
+async def favicon():
+    return Response(status_code=204)
+
 
 app.add_middleware(
     CORSMiddleware,
