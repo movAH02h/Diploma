@@ -6,3 +6,4 @@ sphinx-autodoc-typehints
 # Для форматирования и стиля кода
 ruff
 mypy
+pre-commit
