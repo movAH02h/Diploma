@@ -14,7 +14,7 @@
 **Запуск проекта на ASGI сервере uvicorn:**<br>
 > uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
-#### Исследовательская часть:
+#### Исследовательская часть
 - Результаты для Pyannote: https://colab.research.google.com/drive/1j0MZ67onV5o-nB59WAtviugh7QKwokz4?usp=sharing
 - Результаты для NVIDIA NeMo: https://colab.research.google.com/drive/1kPN60q5kYNOA1UpgHUx02mKHl9PtWg8t?usp=sharing
 - Сравнительный анализ обоих моделей: https://colab.research.google.com/drive/1EG3ng3IGTOJgHTGfPZLgoUuuzgezMLPH?usp=sharing
@@ -23,7 +23,7 @@
 - Дообучение Pyannote: https://colab.research.google.com/drive/1FUUZv7zvO44L1sXYSR0sUb10H40QlmIn?usp=sharing
 - Дообучение NeMo: ?
 
-#### Сборка приложения в docker:
+#### Сборка приложения в docker
 > sudo docker-compose build
 > sudo docker-compose up -d
 - "-d" для запуска контейнера в фоновом режиме
