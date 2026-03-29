@@ -7,9 +7,12 @@ from app.api.v1.audio_processing import router as audio_processing_router
 from app.api.v1.results_processing import router as results_processing_router
 from app.schemas import settings
 from app.models import model_manager
+from dotenv import load_dotenv
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    load_dotenv()
     os.makedirs(settings.UPLOAD_FOLDER, exist_ok=True)
     model_manager.load()
     yield
