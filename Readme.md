@@ -28,7 +28,11 @@
 > sudo docker-compose up -d
 - "-d" для запуска контейнера в фоновом режиме
 
-#### Автодокументация с помощью Sphinx
+#### Автодокументация API с помощью Sphinx
 **Выполнить построение:**
+Создание структуры в папке docs, если ее еще нет:
+> sphinx-quickstart docs
+Генерация документации:
 > sphinx-build -b html docs/source docs/build
+Просмотр документации:
 > xdg-open docs/build/index.html
