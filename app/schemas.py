@@ -8,11 +8,11 @@ class Settings(BaseSettings):
     MAX_FILE_SIZE: int = 2 * 1024 * 1024 # 2 Mb
     ALLOWED_EXTENSIONS: set = {".wav", ".mp3", ".ogg", ".flac"}
 
-    # Diarization params
+    # Diarization params (Pyannote)
     HF_TOKEN: str = os.getenv("HF_TOKEN", "")
     MIN_SEGMENT_DURATION: float = 0.5
 
-    # Transcription params
+    # Transcription params (Whisper)
     WHISPER_MODEL: str = "base.en"
     
     # Logger params
