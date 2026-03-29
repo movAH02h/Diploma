@@ -1,7 +1,6 @@
 import whisper
 from pyannote.audio import Pipeline
 from huggingface_hub import login
-from typing import Optional
 from app.schemas import settings
 from app.logger import logger
 
@@ -16,7 +15,7 @@ class ModelManager():
             logger.debug("Token was successfully downloaded from file!")
             login(token=settings.HF_TOKEN)
         else:
-            raise Exception(f"Token not found!")
+            raise Exception("Token not found!")
         self.diarization = Pipeline.from_pretrained(
             "pyannote/speaker-diarization-3.1"
         )

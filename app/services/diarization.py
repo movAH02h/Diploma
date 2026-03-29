@@ -1,6 +1,3 @@
-import asyncio
-from pyannote.audio import Pipeline
-from huggingface_hub import login
 from typing import Dict, Any
 from app.services.base_service import BaseService
 from app.logger import logger

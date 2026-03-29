@@ -1,7 +1,6 @@
 import os
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
-from app.services.dependencies import get_audio_pipeline, get_audio_repository
-from app.repository.audio import AudioRepository
+from app.services.dependencies import get_audio_pipeline
 from app.schemas import settings
 from app.logger import logger
 

@@ -2,11 +2,8 @@ import asyncio
 import os
 import torch
 import numpy as np
-import whisper
-import soundfile as sf
 import tempfile
-from typing import List, Dict, Any
-from app.schemas import settings
+from typing import Dict, Any
 from app.logger import logger
 from scipy.io import wavfile
 from app.services.base_service import BaseService
@@ -19,14 +16,13 @@ class TranscriptionService(BaseService):
 
     async def _process(self, data: Dict[str, Any]):
         logger.debug("Extracting all from data...")
-        speakers = data["speakers"]
         waveform_np = data["waveform_numpy"]
         sr = data["sample_rate"]
         segments = data["diarization_segments"]
 
         logger.debug("Check if the sample rate is 16000 Hz...")
         if sr != 16000:
-            logger.debug(f"Sample rate is not 16000, but this value is recommended !")
+            logger.debug("Sample rate is not 16000, but this value is recommended !")
 
         logger.debug("Reduce waveform_np's demension...")
         if waveform_np.ndim == 2 and waveform_np.shape[0] == 1:
@@ -129,5 +125,5 @@ class TranscriptionService(BaseService):
         finally:
             try:
                 os.unlink(temp_wav_path)
-            except Exception as e:
+            except Exception:
                 logger.debug(f"Unable to delete {temp_wav_path} file !")
