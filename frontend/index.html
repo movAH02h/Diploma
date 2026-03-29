@@ -2,30 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Transcription of meetings</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="app-container">
-        <div class="control-panel">
-            <h2>Management</h2>
-            <div class="file-section">
-                <div class="file-input-wrapper">
-                    <input type="file" id="audioFile" accept="audio/*">
-                    <label for="audioFile" class="file-label">📁 Select file</label>
-                </div>
-                <div id="fileName" class="file-name"></div>
-                <button type="button" id="deleteFileBtn" class="delete-btn">🗑️ Delete file</button>
+<div class="app-container">
+    <div class="control-panel">
+        <h2>Meeting Studio</h2>
+        <div class="file-section">
+            <div class="file-input-wrapper">
+                <input type="file" id="audioFile" accept="audio/*">
+                <label for="audioFile" class="file-label">📁 Select audio file</label>
             </div>
-            <button id="transcribeBtn" class="transcribe-btn">🎤 Transcribe</button>
-            <div id="progress" class="progress-area"></div>
+            <div id="fileName" class="file-name"></div>
+            <button type="button" id="deleteFileBtn" class="delete-btn">🗑️ Delete file</button>
         </div>
-        <div class="result-panel">
-            <h2>📄 Transcription result</h2>
-            <div id="result" class="result-content"><div class="placeholder">Here will be a result</div></div>
+        <button id="transcribeBtn" class="transcribe-btn">🎤 Transcribe</button>
+        <div id="progress" class="progress-area"></div>
+    </div>
+    <div class="result-panel">
+        <h2>Transcription results</h2>
+        <div id="result" class="result-content">
+            <div class="placeholder">Here will be a result</div>
         </div>
     </div>
-    <script src="script.js"></script>
+</div>
+<script src="script.js"></script>
 </body>
 </html>
