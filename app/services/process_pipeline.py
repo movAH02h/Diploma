@@ -1,7 +1,6 @@
 import os
 from typing import Any, Dict
-from fastapi import Depends
-from fastapi.responses import JSONResponse
+from fastapi import HTTPException
 from app.services.base_service import BaseService
 from app.repository.audio import AudioRepository
 from app.logger import logger
@@ -50,10 +49,9 @@ class ProcessPipeline(BaseService):
                 
                 response["full_text"] = all_text.strip()
                 logger.debug(f"Full text: {response['full_text']}")
-
             try:
                 self.audio_repo.save_audio_result(file.filename, response)
-            except Exception as e:
+            except Exception:
                 logger.debug("Such file already exists")
             return response
 
