@@ -41,7 +41,7 @@ class TranscriptionService(BaseService):
             duration = end_time - start_time
 
             if duration < 0.5:
-                logger.debug("The segment is too short ! Continue...")
+                logger.debug("The segment is too short! Continue...")
                 continue
 
             start_sample = int(start_time * sr)

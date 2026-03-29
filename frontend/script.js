@@ -15,8 +15,12 @@ function escapeHtml(str) {
         .replace(/'/g, '&#39;');
 }
 
-function showPlaceholder() {
-    resultDiv.innerHTML = '<div class="placeholder">Waiting for transcription...</div>';
+function showResultPlaceholder() {
+    resultDiv.innerHTML = '<div class="placeholder">Here will be a result</div>';
+}
+
+function showWaitingPlaceholder() {
+    resultDiv.innerHTML = '<div class="placeholder">Waiting for transcription...</div>'
 }
 
 function parseTextToSegments(fullText) {
@@ -151,7 +155,7 @@ fileInput.addEventListener('change', function() {
         fileNameDiv.innerHTML = '';
     }
     progressDiv.innerHTML = '';
-    showPlaceholder();
+    showResultPlaceholder();
 });
 
 deleteBtn.addEventListener('click', function() {
@@ -159,7 +163,7 @@ deleteBtn.addEventListener('click', function() {
     fileNameDiv.classList.remove('show');
     fileNameDiv.innerHTML = '';
     progressDiv.innerHTML = '';
-    showPlaceholder();
+    showResultPlaceholder();
 });
 
 transcribeBtn.addEventListener('click', async () => {
@@ -170,7 +174,7 @@ transcribeBtn.addEventListener('click', async () => {
 
     const formData = new FormData();
     formData.append('file', fileInput.files[0]);
-    showPlaceholder();
+    showWaitingPlaceholder();
     
     try {
         progressDiv.innerHTML = '⚙️ Processing audio';
@@ -202,6 +206,6 @@ transcribeBtn.addEventListener('click', async () => {
 
 window.addEventListener('load', () => {
     if (!resultDiv.innerHTML.trim() || resultDiv.innerHTML === '') {
-        showPlaceholder();
+        showResultPlaceholder();
     }
 });

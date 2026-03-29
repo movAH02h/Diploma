@@ -3,7 +3,7 @@ sphinx
 sphinx-rtd-theme
 sphinx-autodoc-typehints
 
-# Для форматирования и стиля кода
+# Для проверки стиля кода, ошибок, неиспользуемого кода, ...
 ruff
 mypy
 pre-commit
