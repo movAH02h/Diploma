@@ -6,3 +6,6 @@ __pycache__
 *.md
 .vscode
 .idea
+docs/
+*.rst
+*.md

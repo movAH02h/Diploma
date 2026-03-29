@@ -1,5 +1,9 @@
 ## Транскрибация митингов группы-лиц
 
+#### Техническая спецификация
+1. OC Linux Ubuntu 22.04
+2. VSCode
+
 #### Настройка проекта
 Действия:
 1. Необходимо настроить файл app/config.py. Там содержится важная информация о сервисе, такая как UPLOAD_FOLDER, ALLOWED_EXTENSIONS и многие другие
@@ -18,3 +22,13 @@
 - Оптимизация параметров NeMo: https://colab.research.google.com/drive/1Dla6Il9qP3qLunkl28Cd8KMEIaj2N0PD?usp=sharing
 - Дообучение Pyannote: https://colab.research.google.com/drive/1FUUZv7zvO44L1sXYSR0sUb10H40QlmIn?usp=sharing
 - Дообучение NeMo: ?
+
+#### Сборка приложения в docker:
+> sudo docker-compose build
+> sudo docker-compose up -d
+- "-d" для запуска контейнера в фоновом режиме
+
+#### Автодокументация с помощью Sphinx
+**Выполнить построение:**
+> sphinx-build -b html docs/source docs/build
+> xdg-open docs/build/index.html

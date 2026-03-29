@@ -1,0 +1,8 @@
+# Автоматическая документация
+sphinx
+sphinx-rtd-theme
+sphinx-autodoc-typehints
+
+# Для форматирования и стиля кода
+ruff
+mypy
