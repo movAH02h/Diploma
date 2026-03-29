@@ -12,8 +12,8 @@ import os
 sys.path.insert(0, os.path.abspath("../../"))
 
 project = 'Diploma'
-copyright = '2026, Kirill'
-author = 'Kirill'
+copyright = '2026, Kirill Rumyantsev'
+author = 'Kirill Rumyantsev'
 release = 'v1.0'
 
 # -- General configuration ---------------------------------------------------

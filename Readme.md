@@ -26,6 +26,7 @@
 - Дообучение NeMo: ?
 
 #### Сборка приложения в docker
+Для сборки понадобятся утилиты docker и docker-compose.
 > sudo docker-compose build
 > sudo docker-compose up -d
 - "-d" для запуска контейнера в фоновом режиме

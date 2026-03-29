@@ -6,13 +6,12 @@
 Diploma documentation
 =====================
 
-Add your content using ``reStructuredText`` syntax. See the
-`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-documentation for details.
-
+Welcome to the Diploma documentation. Here you can find all the information about the modules, services, and instructions for use.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   app
+   api_v1
+   repository
+   services
