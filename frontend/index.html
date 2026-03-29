@@ -7,16 +7,27 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Uploading audio for transcription</h1>
-        <div class="file-input-wrapper">
-            <input type="file" id="audioFile" accept="audio/*">
-            <label for="audioFile" class="file-label">📁 Select an audio file</label>
-            <div id="fileName" class="file-name"></div>
+    <div class="app-container">
+        <div class="control-panel">
+            <h2>Management</h2>
+            <div class="file-section">
+                <div class="file-input-wrapper">
+                    <input type="file" id="audioFile" accept="audio/*">
+                    <label for="audioFile" class="file-label">📁 Select file</label>
+                </div>
+                <div id="fileName" class="file-name"></div>
+                <button type="button" id="deleteFileBtn" class="delete-btn">🗑️ Delete file</button>
+            </div>
+            <button id="transcribeBtn" class="transcribe-btn">🎤 Transcribe</button>
+            <div id="progress" class="progress-area"></div>
         </div>
-        <button onclick="uploadFile()">Transcribe</button>
-        <div id="progress"></div>
-        <div id="result"></div>
+        <div class="result-panel">
+            <h2>📄 Transcription result</h2>
+            <div id="result" class="result-content">
+                <div class="placeholder">Here will be a result</div>
+                <!-- Сюда будет выводиться диалог -->
+            </div>
+        </div>
     </div>
     <script src="script.js"></script>
 </body>

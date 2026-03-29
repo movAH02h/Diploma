@@ -1,69 +1,79 @@
-document.getElementById('audioFile').addEventListener('change', function(e) {
-    const fileNameDiv = document.getElementById('fileName');
-    
-    if (this.files[0]) {
+const fileInput = document.getElementById('audioFile');
+const fileNameDiv = document.getElementById('fileName');
+const deleteBtn = document.getElementById('deleteFileBtn');
+const transcribeBtn = document.getElementById('transcribeBtn');
+const progressDiv = document.getElementById('progress');
+const resultDiv = document.getElementById('result');
+
+function showPlaceholder() {
+    resultDiv.innerHTML = '<div class="placeholder">Here will be a result</div>';
+}
+
+fileInput.addEventListener('change', function() {
+    if (this.files && this.files[0]) {
         const file = this.files[0];
         const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
-        const fileName = file.name.length > 30 ? 
-            file.name.substring(0, 30) + '...' : file.name;
-        
-        fileNameDiv.innerHTML = `The file is selected: <span>${fileName}</span> (${fileSizeMB} MB)`;
-        fileNameDiv.className = 'file-name show';
+        let fileName = file.name;
+        if (fileName.length > 35) {
+            fileName = fileName.substring(0, 32) + '...';
+        }
+        fileNameDiv.innerHTML = `📄 <span>${fileName}</span><br>${fileSizeMB} MB`;
+        fileNameDiv.classList.add('show');
     } else {
+        fileNameDiv.classList.remove('show');
         fileNameDiv.innerHTML = '';
-        fileNameDiv.className = 'file-name';
     }
+    progressDiv.innerHTML = '';
+    showPlaceholder();
 });
 
-async function uploadFile() {
-    const fileInput = document.getElementById('audioFile')
-    const progressDiv = document.getElementById('progress')
-    const resultDiv = document.getElementById('result')
-    const fileNameDiv = document.getElementById('fileName')
+deleteBtn.addEventListener('click', function() {
+    fileInput.value = '';
+    fileNameDiv.classList.remove('show');
+    fileNameDiv.innerHTML = '';
+    progressDiv.innerHTML = '';
+    resultDiv.innerHTML = '';
+    showPlaceholder();
+});
 
-    if (!fileInput.files[0]) {
-        alert('Please, select the audio file!')
+transcribeBtn.addEventListener('click', async () => {
+    if (!fileInput.files || !fileInput.files[0]) {
+        alert('Пожалуйста, выберите аудиофайл!');
         return;
     }
 
     const formData = new FormData();
-    formData.append('file', fileInput.files[0])
-    
-    progressDiv.innerHTML = 'Preparation...'
-    resultDiv.innerHTML = ''
-    fileNameDiv.className = 'file-name'
+    formData.append('file', fileInput.files[0]);
+    showPlaceholder();
 
     try {
-        progressDiv.innerHTML = '⚙️ Audio Processing...'
-        await new Promise(resolve => requestAnimationFrame(resolve))
+        progressDiv.innerHTML = '⚙️ Обработка аудио...';
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
         const response = await fetch('http://localhost:8000/process_audio', {
             method: 'POST',
             body: formData
-        })
+        });
 
         if (!response.ok) {
-            const errorText = await response.text()
-            throw new Error(`Server error ${response.status}: ${errorText}`)
+            const errorText = await response.text();
+            throw new Error(`Ошибка сервера ${response.status}: ${errorText}`);
         }
-        const data = await response.json()
 
+        const data = await response.json();
         displayResults(data);
-        progressDiv.innerHTML = '✅ Processing completed!'
-        
+        progressDiv.innerHTML = '✅ Готово!';
     } catch (error) {
-        console.error('Error:', error)
-        progressDiv.innerHTML = '❌ Error'
-        fileNameDiv.className = 'file-name show'
+        console.error('Ошибка:', error);
+        progressDiv.innerHTML = '❌ Ошибка при транскрипции';
+        resultDiv.innerHTML = `<div style="color: #e74c3c;">Не удалось получить результат: ${error.message}</div>`;
     }
-}
+});
 
 function displayResults(data) {
-    const resultDiv = document.getElementById('result')
-    let html = '<h2>📝 Transcription result:</h2>'
-    console.log('Final results: ', data.full_text)
-    html += `<div style="white-space: pre-wrap; padding: 15px; background: white; border-radius: 8px; border: 1px solid #ddd; line-height: 1.6;">
-                ${data.full_text}
-                </div>`
-    
-    resultDiv.innerHTML = html
+    if (data.full_text) {
+        resultDiv.innerHTML = data.full_text.replace(/\n/g, '<br>');
+    } else {
+        resultDiv.innerHTML = 'Текст не получен.';
+    }
 }
