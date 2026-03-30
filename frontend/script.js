@@ -5,6 +5,10 @@ const transcribeBtn = document.getElementById('transcribeBtn');
 const progressDiv = document.getElementById('progress');
 const resultDiv = document.getElementById('result');
 
+const MAX_FILE_SIZE_MB = 2;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+let isFileValid = true;
+
 function escapeHtml(str) {
     if (!str) return '';
     return str
@@ -111,14 +115,12 @@ function renderChatFromSegments(segments) {
 }
 
 function displayResults(data) {
-    // CASE 1: backend returns ready-to-use segments array (ideal)
     if (data.segments && Array.isArray(data.segments) && data.segments.length > 0) {
         const chatHtml = renderChatFromSegments(data.segments);
         resultDiv.innerHTML = chatHtml;
         return;
     }
     
-    // CASE 2: backend returns full_text string (we try to parse dialogue by speaker: lines)
     if (data.full_text && typeof data.full_text === 'string' && data.full_text.trim().length > 0) {
         const parsedSegments = parseTextToSegments(data.full_text);
         if (parsedSegments.length > 0) {
@@ -126,13 +128,11 @@ function displayResults(data) {
             resultDiv.innerHTML = chatHtml;
             return;
         } else {
-            // fallback: show as plain preformatted but with basic style
             resultDiv.innerHTML = `<div class="plain-text">📜 ${escapeHtml(data.full_text).replace(/\n/g, '<br>')}</div>`;
             return;
         }
     }
     
-    // CASE 3: if nothing meaningful, show info
     if (data.error || !data.full_text) {
         resultDiv.innerHTML = `<div class="placeholder">Here will be a results</div>`;
     } else {
@@ -148,13 +148,21 @@ fileInput.addEventListener('change', function() {
         if (fileName.length > 35) {
             fileName = fileName.substring(0, 32) + '...';
         }
-        fileNameDiv.innerHTML = `<span>${fileName}</span><br>${fileSizeMB} MB`;
-        fileNameDiv.classList.add('show');
+        
+        if (file.size > MAX_FILE_SIZE_BYTES) {
+            fileNameDiv.innerHTML = `<span>${fileName}</span><br>${fileSizeMB} MB <span style="color:#b91c1c;">(exceeds ${MAX_FILE_SIZE_MB} MB limit)</span>`;
+            fileNameDiv.classList.add('show');
+            showSizeError(`❌ File too large. Maximum size is ${MAX_FILE_SIZE_MB} MB.`);
+        } else {
+            fileNameDiv.innerHTML = `<span>${fileName}</span><br>${fileSizeMB} MB`;
+            fileNameDiv.classList.add('show');
+            clearSizeError();
+        }
     } else {
         fileNameDiv.classList.remove('show');
         fileNameDiv.innerHTML = '';
+        clearSizeError();
     }
-    progressDiv.innerHTML = '';
     showResultPlaceholder();
 });
 
@@ -166,18 +174,36 @@ deleteBtn.addEventListener('click', function() {
     showResultPlaceholder();
 });
 
+function clearSizeError() {
+    progressDiv.classList.remove('error');
+    progressDiv.innerHTML = '';
+    isFileValid = true;
+    transcribeBtn.disabled = false;
+}
+
+function showSizeError(message) {
+    progressDiv.innerHTML = message;
+    progressDiv.classList.add('error');
+    isFileValid = false;
+    transcribeBtn.disabled = true;
+}
+
 transcribeBtn.addEventListener('click', async () => {
     if (!fileInput.files || !fileInput.files[0]) {
         alert('Please select an audio file first!');
         return;
     }
 
+    const selectedModel = document.querySelector('input[name="model_type"]:checked')?.value || 'base';
+
     const formData = new FormData();
     formData.append('file', fileInput.files[0]);
+    formData.append('model_type', selectedModel);
+
     showWaitingPlaceholder();
     
     try {
-        progressDiv.innerHTML = '⚙️ Processing audio';
+        progressDiv.innerHTML = '⚙️ Processing audio...';
         await new Promise(resolve => setTimeout(resolve, 80));
         
         const response = await fetch('http://localhost:8000/process_audio', {
@@ -199,8 +225,8 @@ transcribeBtn.addEventListener('click', async () => {
         }, 50);
     } catch (error) {
         console.error('Transcription error:', error);
-        progressDiv.innerHTML = '❌ Failed to transcribe. Make sure backend server runs on http://localhost:8000';
-        resultDiv.innerHTML = `<div class="placeholder" style="color:#b91c1c;">⚠️ Connection error: ${escapeHtml(error.message)}<br><br>💡 Tip: start backend service (FastAPI/Flask) at port 8000 with /process_audio endpoint</div>`;
+        progressDiv.innerHTML = 'Failed to transcribe';
+        resultDiv.innerHTML = `<div class="placeholder" style="color:#b91c1c;">Failed to transcribe</div>`;
     }
 });
 

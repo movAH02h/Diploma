@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     ALLOWED_EXTENSIONS: set = {".wav", ".mp3", ".ogg", ".flac"}
 
     # Diarization params (Pyannote)
+    DIARIZATION_MODEL_BASE = "pyannote/speaker-diarization-3.1"
+    DIARIZATION_MODEL_PRO = "pyannote/speaker-diarization-3.1"
     HF_TOKEN: str = os.getenv("HF_TOKEN", "")
     MIN_SEGMENT_DURATION: float = 0.5
 
