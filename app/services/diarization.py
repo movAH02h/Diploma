@@ -10,7 +10,8 @@ class DiarizationService(BaseService):
 
     async def _process(self, data: Dict[str, Any]) -> Dict[str, Any]:
         logger.debug("Obtaining a diarization model...")
-        diarization_pipeline = model_manager.get_diarization()
+        model_type = data.get("model_type", "base")
+        diarization_pipeline = model_manager.get_diarization(model_type)
         if "waveform_tensor" in data:
             waveform_tensor = data["waveform_tensor"]
         if "sample_rate" in data:
