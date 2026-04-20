@@ -9,8 +9,8 @@ class DiarizationService(BaseService):
         super().__init__("DiarizationService")
 
     async def _process(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        logger.debug("Obtaining a diarization model...")
         model_type = data.get("model_type", "base")
+        logger.debug(f"Obtaining a diarization model {model_type}...")
         diarization_pipeline = model_manager.get_diarization(model_type)
         if "waveform_tensor" in data:
             waveform_tensor = data["waveform_tensor"]

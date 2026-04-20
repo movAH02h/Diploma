@@ -243,7 +243,6 @@ input[type="file"] {
 .progress-area:not(:empty) {
     background: #fef9e3;
     padding: 12px;
-    border-left: 4px solid #f59e0b;
     color: #b45309;
     border-radius: 20px;
 }

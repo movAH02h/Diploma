@@ -10,7 +10,7 @@ class Settings(BaseSettings):
 
     # Diarization params (Pyannote)
     DIARIZATION_MODEL_BASE_NAME: str = "pyannote/speaker-diarization-3.1"
-    DIARIZATION_MODEL_PRO_DIR: str = "pyannote/speaker-diarization-3.1"
+    SEGMENTATION_MODEL_PRO: str = "models/segmentation/last.ckpt" # Path to checkpoint
     HF_TOKEN: str = os.getenv("HF_TOKEN", "")
     MIN_SEGMENT_DURATION: float = 0.5
 
