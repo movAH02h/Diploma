@@ -6,10 +6,12 @@ from app.services.diarization import DiarizationService
 from app.services.transcription import TranscriptionService
 from app.repository.audio import AudioRepository
 from app.schemas import settings
+from app.database import get_db
+from sqlalchemy.orm import Session
 
 
-def get_audio_repository() -> AudioRepository:
-    return AudioRepository()
+def get_audio_repository(db: Session = Depends(get_db)) -> AudioRepository:
+    return AudioRepository(db)
 
 
 def get_process_audio_service() -> ProcessAudioService:

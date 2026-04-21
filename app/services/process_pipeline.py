@@ -49,10 +49,8 @@ class ProcessPipeline(BaseService):
                 
                 response["full_text"] = all_text.strip()
                 logger.debug(f"Full text: {response['full_text']}")
-            try:
-                self.audio_repo.save_audio_result(file.filename, response)
-            except Exception:
-                logger.debug("Such file already exists")
+            result_id = self.audio_repo.save_audio_result(file.filename, response)
+            response["id"] = result_id
             return response
 
         except Exception as e:

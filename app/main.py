@@ -8,7 +8,10 @@ from app.api.v1.audio_processing import router as audio_processing_router
 from app.api.v1.results_processing import router as results_processing_router
 from app.schemas import settings
 from app.models import model_manager
+from app.database import engine
+from app.models import Base
 
+Base.metadata.create_all(bind=engine)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -39,8 +42,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(audio_processing_router)
-app.include_router(results_processing_router)
+app.include_router(audio_processing_router, prefix="/api/v1")
+app.include_router(results_processing_router, prefix="/api/v1")
 
 frontend_path = os.path.join(os.path.dirname(__file__), "../frontend")
 if os.path.exists(frontend_path):

@@ -5,6 +5,10 @@ from pyannote.audio.pipelines import SpeakerDiarization
 from huggingface_hub import login
 from app.schemas import settings
 from app.logger import logger
+from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey, DateTime
+from sqlalchemy.orm import relationship
+from datetime import datetime
+from app.database import Base
 
 class ModelManager():
     def __init__(self):
@@ -67,5 +71,37 @@ class ModelManager():
             if self._diarization_pro is None:
                 raise RuntimeError("Pro diarization model not loaded")
             return self._diarization_pro
+
+class AudioResult(Base):
+    __tablename__ = "audio_results"
+
+    id = Column(Integer, primary_key=True, index=True)
+    filename = Column(String, nullable=False)
+    status = Column(String, default="success")
+    full_text = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    speakers = relationship("Speaker", back_populates="audio_result", cascade="all, delete-orphan")
+
+class Speaker(Base):
+    __tablename__ = "speakers"
+
+    id = Column(Integer, primary_key=True, index=True)
+    audio_result_id = Column(Integer, ForeignKey("audio_results.id"), nullable=False)
+    label = Column(String, nullable=False)  # например "SPEAKER_00"
+
+    audio_result = relationship("AudioResult", back_populates="speakers")
+    segments = relationship("TranscriptionSegment", back_populates="speaker", cascade="all, delete-orphan")
+
+class TranscriptionSegment(Base):
+    __tablename__ = "transcription_segments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    speaker_id = Column(Integer, ForeignKey("speakers.id"), nullable=False)
+    start_time = Column(Float, nullable=False)
+    end_time = Column(Float, nullable=False)
+    text = Column(Text, nullable=False)
+
+    speaker = relationship("Speaker", back_populates="segments")
 
 model_manager = ModelManager()

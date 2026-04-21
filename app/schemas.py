@@ -10,7 +10,7 @@ class Settings(BaseSettings):
 
     # Diarization params (Pyannote)
     DIARIZATION_MODEL_BASE_NAME: str = "pyannote/speaker-diarization-3.1"
-    SEGMENTATION_MODEL_PRO: str = "models/segmentation/last.ckpt" # Path to checkpoint
+    SEGMENTATION_MODEL_PRO: str = "models/segmentation/best-epoch=09-step=5329.ckpt" # Path to checkpoint
     HF_TOKEN: str = os.getenv("HF_TOKEN", "")
     MIN_SEGMENT_DURATION: float = 0.5
 
@@ -22,6 +22,9 @@ class Settings(BaseSettings):
 
     # State of the project
     IS_PRODUCTION: bool = False
+
+    # database
+    DATABASE_URL: str = "sqlite:///./audio_results.db"
 
 
 settings = Settings()
