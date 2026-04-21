@@ -8,10 +8,10 @@ class AudioRepository:
         self.db = db
 
     def save_audio_result(self, file_name: str, result_data: Dict[str, Any]) -> int:
-        # Проверяем, нет ли уже файла с таким именем (опционально)
         existing = self.db.query(models.AudioResult).filter(models.AudioResult.filename == file_name).first()
         if existing:
-            raise HTTPException(status_code=400, detail="Such file already exists")
+            self.db.delete(existing)
+            self.db.flush()
 
         audio_result = models.AudioResult(
             filename=file_name,

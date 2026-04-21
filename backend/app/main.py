@@ -36,7 +36,7 @@ async def favicon():
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -45,11 +45,11 @@ app.add_middleware(
 app.include_router(audio_processing_router, prefix="/api/v1")
 app.include_router(results_processing_router, prefix="/api/v1")
 
-frontend_path = os.path.join(os.path.dirname(__file__), "../frontend")
+frontend_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../frontend"))
 if os.path.exists(frontend_path):
-    print(f"Folder with frontend found: {frontend_path}")
+    print(f"Frontend folder found: {frontend_path}")
+    static_path = os.path.join(frontend_path, ".next", "static")
+    if os.path.exists(static_path):
+        app.mount("/static", StaticFiles(directory=static_path), name="static")
 else:
-    print(f"Folder {frontend_path} not found")
-
-if os.path.exists(frontend_path):
-    app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")
+    print("Frontend folder not found")

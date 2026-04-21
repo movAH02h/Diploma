@@ -24,6 +24,7 @@ transformers>=4.25.0
 # Дополнительные утилиты
 dataclasses>=0.6
 typing-extensions>=4.0.0
+pydantic>=2.0
 pydantic_settings
 python-multipart
 

@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+*.db
+.venv/
+.git/
+docs/
+frontend/
+models/
+*.md
+.ruff_cache/
