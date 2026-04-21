@@ -88,7 +88,7 @@ class Speaker(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     audio_result_id = Column(Integer, ForeignKey("audio_results.id"), nullable=False)
-    label = Column(String, nullable=False)  # например "SPEAKER_00"
+    label = Column(String, nullable=False)
 
     audio_result = relationship("AudioResult", back_populates="speakers")
     segments = relationship("TranscriptionSegment", back_populates="speaker", cascade="all, delete-orphan")

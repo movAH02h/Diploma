@@ -67,11 +67,11 @@ class ProcessAudioService(BaseService):
         logger.debug("Convertion to the range [-1, 1]")
         samples = np.array(audio.get_array_of_samples())
 
-        if audio.sample_width == 2:  # 16-bit
+        if audio.sample_width == 2:
             samples = samples.astype(np.float32) / 32768.0
-        elif audio.sample_width == 4:  # 32-bit
+        elif audio.sample_width == 4:
             samples = samples.astype(np.float32) / 2147483648.0 
-        elif audio.sample_width == 1:  # 8-bit
+        elif audio.sample_width == 1:
             samples = (samples.astype(np.float32) - 128) / 128.0
         else:
             samples = samples.astype(np.float32)

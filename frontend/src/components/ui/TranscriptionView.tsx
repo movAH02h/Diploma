@@ -1,4 +1,3 @@
-// components/ui/TranscriptionView.tsx
 'use client';
 
 import { TranscriptionResult } from '@/lib/types';
@@ -40,16 +39,13 @@ function parseTextToSegments(fullText: string): ParsedSegment[] {
 export default function TranscriptionView({ result }: { result: TranscriptionResult }) {
   let messages: ParsedSegment[] = [];
   
-  // Сначала пытаемся использовать структурированные сегменты из ответа API
   if (result.transcriptions) {
     for (const [speaker, data] of Object.entries(result.transcriptions)) {
       for (const seg of data.segments) {
         messages.push({ speaker, text: seg.text });
       }
     }
-    // Сортируем по времени начала (если есть start)
     messages.sort((a, b) => {
-      // здесь можно добавить сортировку по start, если он доступен в сегменте
       return 0;
     });
   } else if (result.full_text) {
@@ -60,7 +56,6 @@ export default function TranscriptionView({ result }: { result: TranscriptionRes
     return <p className="text-slate-400 italic text-center py-8">No dialogue segments found</p>;
   }
 
-  // Определяем стороны для спикеров (чередование лево/право)
   const speakerSides = new Map<string, 'left' | 'right'>();
   const seenSpeakers: string[] = [];
   messages.forEach(msg => {

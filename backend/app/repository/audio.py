@@ -19,9 +19,8 @@ class AudioRepository:
             full_text=result_data.get("full_text", "")
         )
         self.db.add(audio_result)
-        self.db.flush()  # чтобы получить id
+        self.db.flush()
 
-        # Сохраняем сегменты по спикерам
         transcriptions = result_data.get("transcriptions", {})
         for speaker_label, trans_data in transcriptions.items():
             speaker = models.Speaker(
@@ -48,7 +47,6 @@ class AudioRepository:
         if not audio_result:
             raise HTTPException(status_code=404, detail="Result not found")
 
-        # Формируем ответ в том же формате, что ожидает фронтенд
         response = {
             "id": audio_result.id,
             "filename": audio_result.filename,
@@ -85,7 +83,6 @@ class AudioRepository:
         ]
     
     def delete_all_audio_results(self) -> int:
-        """Удаляет все результаты и возвращает количество удалённых записей."""
         count = self.db.query(models.AudioResult).delete()
         self.db.commit()
         return count
