@@ -49,7 +49,7 @@ class ProcessPipeline(BaseService):
                 
                 response["full_text"] = all_text.strip()
                 logger.debug(f"Full text: {response['full_text']}")
-            result_id = self.audio_repo.save_audio_result(file.filename, response)
+            result_id = self.audio_repo.save_audio_result(data.get("user_id"), file.filename, response)
             response["id"] = result_id
             return response
 

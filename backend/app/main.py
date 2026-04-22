@@ -6,6 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.audio_processing import router as audio_processing_router
 from app.api.v1.results_processing import router as results_processing_router
+from app.api.v1.auth import router as auth_router
 from app.schemas import settings
 from app.models import model_manager
 from app.database import engine
@@ -38,12 +39,14 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 app.include_router(audio_processing_router, prefix="/api/v1")
 app.include_router(results_processing_router, prefix="/api/v1")
+app.include_router(auth_router)
 
 frontend_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../frontend"))
 if os.path.exists(frontend_path):

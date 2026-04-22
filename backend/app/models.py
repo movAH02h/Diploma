@@ -5,10 +5,11 @@ from pyannote.audio.pipelines import SpeakerDiarization
 from huggingface_hub import login
 from app.schemas import settings
 from app.logger import logger
-from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.database import Base
+from passlib.context import CryptContext
 
 class ModelManager():
     def __init__(self):
@@ -76,11 +77,13 @@ class AudioResult(Base):
     __tablename__ = "audio_results"
 
     id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     filename = Column(String, nullable=False)
     status = Column(String, default="success")
     full_text = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
+    user = relationship("User", back_populates="audio_results")
     speakers = relationship("Speaker", back_populates="audio_result", cascade="all, delete-orphan")
 
 class Speaker(Base):
@@ -105,3 +108,25 @@ class TranscriptionSegment(Base):
     speaker = relationship("Speaker", back_populates="segments")
 
 model_manager = ModelManager()
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, unique=True, index=True, nullable=False)
+    username = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    audio_results = relationship("AudioResult", back_populates="user", cascade="all, delete-orphan")
+
+    def verify_password(self, password: str) -> bool:
+        return pwd_context.verify(password, self.hashed_password)
+
+    @staticmethod
+    def hash_password(password: str) -> str:
+        return pwd_context.hash(password)

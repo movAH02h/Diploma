@@ -2,6 +2,15 @@ import { UploadResponse, TranscriptionResult, HistoryItem } from './types';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
+function getAuthHeaders(): HeadersInit {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const headers: HeadersInit = {};
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+}
+
 export async function uploadAudio(file: File, modelType: string): Promise<UploadResponse> {
   const formData = new FormData();
   formData.append('file', file);
@@ -10,6 +19,7 @@ export async function uploadAudio(file: File, modelType: string): Promise<Upload
   const res = await fetch(`${API_BASE}/api/v1/process_audio`, {
     method: 'POST',
     body: formData,
+    headers: getAuthHeaders(),
   });
 
   if (!res.ok) {
@@ -20,13 +30,17 @@ export async function uploadAudio(file: File, modelType: string): Promise<Upload
 }
 
 export async function fetchHistory(): Promise<HistoryItem[]> {
-  const res = await fetch(`${API_BASE}/api/v1/results`);
+  const res = await fetch(`${API_BASE}/api/v1/results`, {
+    headers: getAuthHeaders(),
+  });
   if (!res.ok) throw new Error('Failed to fetch history');
   return res.json();
 }
 
 export async function fetchResultById(id: number): Promise<TranscriptionResult> {
-  const res = await fetch(`${API_BASE}/api/v1/results/${id}`);
+  const res = await fetch(`${API_BASE}/api/v1/results/${id}`, {
+    headers: getAuthHeaders(),
+  });
   if (!res.ok) throw new Error('Failed to fetch result');
   return res.json();
 }
@@ -34,6 +48,7 @@ export async function fetchResultById(id: number): Promise<TranscriptionResult> 
 export async function deleteAllHistory(): Promise<void> {
   const res = await fetch(`${API_BASE}/api/v1/results`, {
     method: 'DELETE',
+    headers: getAuthHeaders(),
   });
   if (!res.ok) throw new Error('Failed to delete history');
 }

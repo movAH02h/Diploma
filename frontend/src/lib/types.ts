@@ -28,3 +28,21 @@ export interface HistoryItem {
 }
 
 export interface UploadResponse extends TranscriptionResult {}
+
+export interface UserResponse {
+  id: number;
+  email: string;
+  username: string;
+  is_active: boolean;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  email: string;
+  username: string;
+  password: string;
+}

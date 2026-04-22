@@ -7,13 +7,17 @@ class AudioRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def save_audio_result(self, file_name: str, result_data: Dict[str, Any]) -> int:
-        existing = self.db.query(models.AudioResult).filter(models.AudioResult.filename == file_name).first()
+    def save_audio_result(self, user_id: int, file_name: str, result_data: Dict[str, Any]) -> int:
+        existing = self.db.query(models.AudioResult).filter(
+            models.AudioResult.user_id == user_id,
+            models.AudioResult.filename == file_name
+        ).first()
         if existing:
             self.db.delete(existing)
             self.db.flush()
 
         audio_result = models.AudioResult(
+            user_id=user_id,
             filename=file_name,
             status=result_data.get("status", "success"),
             full_text=result_data.get("full_text", "")
@@ -42,8 +46,11 @@ class AudioRepository:
         self.db.commit()
         return audio_result.id
 
-    def get_audio_result(self, result_id: int) -> Dict[str, Any]:
-        audio_result = self.db.query(models.AudioResult).filter(models.AudioResult.id == result_id).first()
+    def get_audio_result(self, result_id: int, user_id: int) -> Dict[str, Any]:
+        audio_result = self.db.query(models.AudioResult).filter(
+            models.AudioResult.id == result_id,
+            models.AudioResult.user_id == user_id
+        ).first()
         if not audio_result:
             raise HTTPException(status_code=404, detail="Result not found")
 
@@ -69,8 +76,10 @@ class AudioRepository:
             }
         return response
 
-    def get_all_audio_results(self) -> List[Dict[str, Any]]:
-        results = self.db.query(models.AudioResult).order_by(models.AudioResult.created_at.desc()).all()
+    def get_audio_results_by_user(self, user_id: int) -> List[Dict[str, Any]]:
+        results = self.db.query(models.AudioResult).filter(
+            models.AudioResult.user_id == user_id
+        ).order_by(models.AudioResult.created_at.desc()).all()
         return [
             {
                 "id": r.id,
@@ -82,7 +91,9 @@ class AudioRepository:
             for r in results
         ]
     
-    def delete_all_audio_results(self) -> int:
-        count = self.db.query(models.AudioResult).delete()
+    def delete_all_audio_results_by_user(self, user_id: int) -> int:
+        count = self.db.query(models.AudioResult).filter(
+            models.AudioResult.user_id == user_id
+        ).delete()
         self.db.commit()
         return count
