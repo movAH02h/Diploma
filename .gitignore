@@ -1,6 +1,5 @@
 .venv/
 __pycache__/
-hugging_face_token.txt
 audio_files/
 *.db
 .env
