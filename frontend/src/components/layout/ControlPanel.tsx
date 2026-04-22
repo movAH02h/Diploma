@@ -1,105 +1,100 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import FileUpload from '@/components/ui/FileUpload';
-import ModelSelector from '@/components/ui/ModelSelector';
-import HistoryList from '@/components/ui/HistoryList';
-import { TranscriptionResult } from '@/lib/types';
-import { useHistory } from '@/hooks/useHistory';
-import { useTranscription } from '@/hooks/useTranscription';
+import { useState } from 'react';
+import { HistoryItem, TranscriptionResult } from '@/lib/types';
+import { fetchResultById } from '@/lib/api';
+import ConfirmModal from '@/components/ui/ConfirmModal';
 
 interface ControlPanelProps {
-  onProcessingStart: () => void;
-  onResult: (result: TranscriptionResult) => void;
-  onError: () => void;
-  onClear: () => void;
+  history: HistoryItem[];
+  onSelect: (result: TranscriptionResult) => void;
+  onClear: () => Promise<void>;
+  onRefresh: () => void;
+  selectedId: number | null;
 }
 
-export default function ControlPanel({ onProcessingStart, onResult, onError, onClear }: ControlPanelProps) {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [modelType, setModelType] = useState('base');
-  const [uploadError, setUploadError] = useState<string | null>(null);
-  const { isProcessing, error, transcribe, result } = useTranscription();
-  const { history, loadHistory, clearHistory } = useHistory();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+export default function ControlPanel({ history, onSelect, onClear, onRefresh, selectedId }: ControlPanelProps) {
+  const [loading, setLoading] = useState(false);
+  const [showClearModal, setShowClearModal] = useState(false);
 
-  const handleFileChange = (file: File | null) => {
-    setSelectedFile(file);
-    setUploadError(null);
-  };
-
-  const handleTranscribe = async () => {
-    if (!selectedFile) return;
-    onProcessingStart();
+  const handleSelect = async (item: HistoryItem) => {
+    setLoading(true);
     try {
-      const res = await transcribe(selectedFile, modelType);
-      onResult(res);
+      const result = await fetchResultById(item.id);
+      onSelect(result);
     } catch (err) {
-      setUploadError(err instanceof Error ? err.message : 'Transcription failed');
-      onError();
+      console.error('Failed to load result:', err);
+    } finally {
+      setLoading(false);
     }
-    await loadHistory();
   };
 
-  const handleClearFile = () => {
-    setSelectedFile(null);
-    if (fileInputRef.current) fileInputRef.current.value = '';
-    setUploadError(null);
-    onClear();
-  };
-
-  const handleHistorySelect = (res: TranscriptionResult) => {
-    onResult(res);
-  };
-
-  const handleClearHistory = async () => {
-    await clearHistory();
-    onClear();
+  const handleClearConfirm = async () => {
+    await onClear();
+    setShowClearModal(false);
   };
 
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-        Meeting Studio
-      </h2>
-      
-      <div className="bg-slate-50 rounded-2xl p-5 space-y-4 border border-slate-200">
-        <FileUpload 
-          onFileChange={handleFileChange}
-          onClear={handleClearFile}
-          error={uploadError}
-          ref={fileInputRef}
-        />
+      {loading && (
+        <div className="flex items-center justify-center py-4">
+          <div className="w-5 h-5 border-2 border-[#89dceb] border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
 
-        {isProcessing ? (
-          <div className="bg-blue-100 border border-blue-300 rounded-xl p-4 text-center">
-            <div className="flex items-center justify-center gap-2">
-              <span className="animate-spin text-xl">⏳</span>
-              <span className="text-blue-700 font-semibold">Processing...</span>
-            </div>
+      <div className="bg-[#1a1a1a] rounded-xl p-4 border border-[#3d3d3d]">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-medium text-[#888]">Transcription History</h3>
+          <div className="flex gap-2">
+            <button
+              onClick={onRefresh}
+              className="p-1.5 hover:bg-[#333] rounded-lg transition"
+            >
+              <svg className="w-4 h-4 text-[#888]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            </button>
+            <button
+              onClick={() => setShowClearModal(true)}
+              disabled={history.length === 0}
+              className="text-xs text-[#888] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed transition"
+            >
+              Clear All
+            </button>
           </div>
-        ) : (
-          <button
-            onClick={handleTranscribe}
-            disabled={!selectedFile}
-            className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-300 text-white font-bold py-3 px-4 rounded-full transition flex items-center justify-center gap-2"
-          >
-            🎤 Transcribe
-          </button>
-        )}
-        
-        {error && (
-          <p className="text-red-600 text-sm text-center">{error}</p>
-        )}
+        </div>
+
+        <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1">
+          {history.length === 0 ? (
+            <p className="text-[#666] text-sm text-center py-6">No transcriptions yet</p>
+          ) : (
+            history.map((item) => (
+              <div
+                key={item.id}
+                onClick={() => handleSelect(item)}
+                className={`p-3 rounded-lg cursor-pointer transition border ${
+                  selectedId === item.id
+                    ? 'bg-[#89dceb]/10 border-[#89dceb]/50'
+                    : 'bg-[#252525] border-transparent hover:bg-[#2a2a2a]'
+                }`}
+              >
+                <p className="text-white text-sm font-medium truncate">{item.filename}</p>
+                <div className="flex justify-between text-xs text-[#666] mt-1">
+                  <span>{item.speakers_count} speaker{item.speakers_count !== 1 ? 's' : ''}</span>
+                  <span>{new Date(item.created_at).toLocaleDateString()}</span>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
 
-      <ModelSelector value={modelType} onChange={setModelType} />
-
-      <HistoryList 
-        history={history} 
-        onSelect={handleHistorySelect}
-        onClear={handleClearHistory}
-        onRefresh={loadHistory}
+      <ConfirmModal
+        isOpen={showClearModal}
+        onClose={() => setShowClearModal(false)}
+        onConfirm={handleClearConfirm}
+        title="Clear all history?"
+        message="This will permanently delete all saved transcriptions."
       />
     </div>
   );

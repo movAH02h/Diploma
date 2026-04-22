@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { UserResponse } from '@/lib/types';
 
 interface AuthContextType {
@@ -10,6 +10,8 @@ interface AuthContextType {
   register: (email: string, username: string, password: string) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
+  onAuthSuccess: (() => void) | null;
+  setOnAuthSuccess: (callback: (() => void) | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -18,6 +20,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserResponse | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [onAuthSuccess, setOnAuthSuccess] = useState<(() => void) | null>(null);
 
   useEffect(() => {
     const savedToken = localStorage.getItem('token');
@@ -30,28 +33,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string) => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-    if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error.detail || 'Login failed');
-    }
-    const data = await res.json();
-    setToken(data.access_token);
-    localStorage.setItem('token', data.access_token);
+    setIsLoading(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.detail || 'Login failed');
+      }
+      const data = await res.json();
+      setToken(data.access_token);
+      localStorage.setItem('token', data.access_token);
 
-    const userRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/me`, {
-      headers: { Authorization: `Bearer ${data.access_token}` },
-    });
-    if (!userRes.ok) {
-      throw new Error('Failed to get user info');
+      const userRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/me`, {
+        headers: { Authorization: `Bearer ${data.access_token}` },
+      });
+      if (!userRes.ok) {
+        throw new Error('Failed to get user info');
+      }
+      const userData = await userRes.json();
+      setUser(userData);
+      localStorage.setItem('user', JSON.stringify(userData));
+      
+      if (onAuthSuccess) {
+        onAuthSuccess();
+        setOnAuthSuccess(null);
+      }
+    } finally {
+      setIsLoading(false);
     }
-    const userData = await userRes.json();
-    setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
   };
 
   const register = async (email: string, username: string, password: string) => {
@@ -75,7 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, register, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, token, login, register, logout, isLoading, onAuthSuccess, setOnAuthSuccess }}>
       {children}
     </AuthContext.Provider>
   );

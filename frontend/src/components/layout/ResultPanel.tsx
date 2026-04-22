@@ -7,24 +7,31 @@ interface ResultPanelProps {
 }
 
 export default function ResultPanel({ result, isLoading }: ResultPanelProps) {
-  return (
-    <>
-      <h2 className="text-2xl font-bold border-l-4 border-blue-500 pl-4 text-slate-800">
-        Transcription results
-      </h2>
-      <div className="flex-1 overflow-y-auto mt-4 pr-2">
-        {isLoading ? (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-slate-400 italic">Processing audio...</p>
-          </div>
-        ) : result ? (
-          <TranscriptionView result={result} />
-        ) : (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-slate-400 italic">Here will be a result</p>
-          </div>
-        )}
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-3 border-[#89dceb] border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-[#888]">Processing audio...</p>
+        </div>
       </div>
-    </>
+    );
+  }
+
+  if (!result) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <div className="w-16 h-16 bg-[#252525] rounded-full flex items-center justify-center mb-4">
+          <span className="text-3xl">🎙️</span>
+        </div>
+        <p className="text-[#888] text-center">
+          Upload an audio file to start transcription
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <TranscriptionView result={result} />
   );
 }

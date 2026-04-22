@@ -1,4 +1,4 @@
-import React, { forwardRef, useState, useEffect } from 'react';
+import React, { forwardRef, useState } from 'react';
 
 interface FileUploadProps {
   onFileChange: (file: File | null) => void;
@@ -40,9 +40,25 @@ const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
 
     return (
       <div className="space-y-3">
-        <div className="flex gap-2">
-          <label className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-full cursor-pointer text-center transition">
-            📁 Choose audio
+        {fileInfo ? (
+          <div className="space-y-2">
+            <div className={`p-3 rounded-lg text-sm ${fileInfo.tooBig ? 'bg-red-900/30 border border-red-500/50' : 'bg-[#252525]'}`}>
+              <p className="text-white font-medium">{fileInfo.name}</p>
+              <p className="text-[#888] text-xs">
+                {fileInfo.size} MB 
+                {fileInfo.tooBig && <span className="text-red-400 ml-1">(exceeds {MAX_SIZE_MB} MB)</span>}
+              </p>
+            </div>
+            <button
+              onClick={handleClear}
+              className="w-full py-2 bg-[#333] hover:bg-[#444] text-white rounded-lg text-sm transition"
+            >
+              Clear
+            </button>
+          </div>
+        ) : (
+          <label className="block bg-[#333] hover:bg-[#444] text-white font-medium py-3 px-4 rounded-lg cursor-pointer text-center transition">
+            Choose audio file
             <input
               type="file"
               accept="audio/*"
@@ -51,25 +67,9 @@ const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
               className="hidden"
             />
           </label>
-          <button
-            onClick={handleClear}
-            className="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-full transition"
-          >
-            🗑️ Clear
-          </button>
-        </div>
-
-        {fileInfo && (
-          <div className={`p-3 rounded-xl text-sm ${fileInfo.tooBig ? 'bg-red-50 text-red-700' : 'bg-slate-100'}`}>
-            <p className="font-medium">{fileInfo.name}</p>
-            <p className="text-xs">
-              {fileInfo.size} MB 
-              {fileInfo.tooBig && <span className="text-red-600 ml-1">(exceeds {MAX_SIZE_MB} MB limit)</span>}
-            </p>
-          </div>
         )}
 
-        {error && <p className="text-red-600 text-sm mt-1">{error}</p>}
+        {error && <p className="text-red-400 text-sm">{error}</p>}
       </div>
     );
   }

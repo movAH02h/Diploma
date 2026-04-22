@@ -33,48 +33,49 @@ export default function HistoryList({ history, onSelect, onClear, onRefresh }: H
   const handleClearConfirm = async () => {
     await onClear();
     setShowClearModal(false);
+    setSelectedId(null);
   };
 
   return (
-    <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+    <div className="bg-[#1a1a1a] rounded-xl p-4 border border-[#3d3d3d]">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-bold text-slate-700">📋 History</h3>
+        <h3 className="text-sm font-medium text-[#888]">Recent Transcriptions</h3>
         <div className="flex gap-1">
           <button
             onClick={() => setShowClearModal(true)}
             disabled={history.length === 0}
-            className="text-xs bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
+            className="text-xs px-2 py-1 text-[#888] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            🗑️ Clear
+            Clear
           </button>
           <button
             onClick={onRefresh}
-            className="text-xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100"
+            className="p-1 hover:bg-[#252525] rounded transition"
           >
-            ⟳
+            <svg className="w-4 h-4 text-[#888]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
           </button>
         </div>
       </div>
 
-      <div className="max-h-[300px] overflow-y-auto space-y-2 pr-1">
+      <div className="space-y-2 max-h-[200px] overflow-y-auto pr-1">
         {history.length === 0 ? (
-          <p className="text-slate-400 text-center py-4 text-sm italic">No saved transcriptions</p>
+          <p className="text-[#666] text-sm text-center py-4">No transcriptions yet</p>
         ) : (
           history.map((item) => (
             <div
               key={item.id}
-              onClick={() => {
-                handleSelect(item);
-              }}
-              className={`p-3 rounded-xl cursor-pointer transition border ${
+              onClick={() => handleSelect(item)}
+              className={`p-3 rounded-lg cursor-pointer transition border ${
                 selectedId === item.id
-                  ? 'bg-blue-50 border-blue-300'
-                  : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
+                  ? 'bg-[#89dceb]/10 border-[#89dceb]/50'
+                  : 'bg-[#252525] border-transparent hover:bg-[#2a2a2a]'
               }`}
             >
-              <p className="font-medium text-sm">📄 {item.filename}</p>
-              <div className="flex justify-between text-xs text-slate-500 mt-1">
-                <span>👥 {item.speakers_count} speaker{item.speakers_count !== 1 ? 's' : ''}</span>
+              <p className="text-white text-sm font-medium truncate">{item.filename}</p>
+              <div className="flex justify-between text-xs text-[#666] mt-1">
+                <span>{item.speakers_count} speaker{item.speakers_count !== 1 ? 's' : ''}</span>
                 <span>{new Date(item.created_at).toLocaleDateString()}</span>
               </div>
             </div>
@@ -87,7 +88,7 @@ export default function HistoryList({ history, onSelect, onClear, onRefresh }: H
         onClose={() => setShowClearModal(false)}
         onConfirm={handleClearConfirm}
         title="Clear all history?"
-        message="This will permanently delete all saved transcriptions. This action cannot be undone."
+        message="This will permanently delete all saved transcriptions."
       />
     </div>
   );

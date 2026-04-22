@@ -55,10 +55,6 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
         await register(email, username, password);
       }
       onClose();
-      setEmail('');
-      setUsername('');
-      setPassword('');
-      setConfirmPassword('');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -68,37 +64,37 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
 
   return (
     <div 
-      className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
       onClick={onClose}
     >
       <div 
-        className="bg-white rounded-3xl p-8 max-w-md w-[90%] shadow-2xl"
+        className="bg-[#252525] rounded-2xl p-8 max-w-md w-[90%] shadow-2xl border border-[#3d3d3d]"
         onClick={(e) => e.stopPropagation()}
       >
-        <h3 className="text-2xl font-bold text-slate-800 mb-6 text-center">
-          {mode === 'login' ? 'Login' : 'Create Account'}
+        <h3 className="text-2xl font-bold text-white mb-6 text-center">
+          {mode === 'login' ? 'Sign In' : 'Create Account'}
         </h3>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-600 mb-1">Email</label>
+            <label className="block text-sm text-[#888] mb-1">Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full bg-[#1a1a1a] border border-[#3d3d3d] rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#89dceb] transition"
               required
             />
           </div>
           
           {mode === 'register' && (
             <div>
-              <label className="block text-sm font-medium text-slate-600 mb-1">Username</label>
+              <label className="block text-sm text-[#888] mb-1">Username</label>
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full bg-[#1a1a1a] border border-[#3d3d3d] rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#89dceb] transition"
                 required
                 minLength={3}
               />
@@ -106,12 +102,12 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
           )}
           
           <div>
-            <label className="block text-sm font-medium text-slate-600 mb-1">Password</label>
+            <label className="block text-sm text-[#888] mb-1">Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full bg-[#1a1a1a] border border-[#3d3d3d] rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#89dceb] transition"
               required
               minLength={6}
             />
@@ -119,44 +115,41 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
           
           {mode === 'register' && (
             <div>
-              <label className="block text-sm font-medium text-slate-600 mb-1">Confirm Password</label>
+              <label className="block text-sm text-[#888] mb-1">Confirm Password</label>
               <input
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full border border-slate-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="w-full bg-[#1a1a1a] border border-[#3d3d3d] rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-[#89dceb] transition"
                 required
                 minLength={6}
               />
             </div>
           )}
           
-          {error && <p className="text-red-600 text-sm">{error}</p>}
+          {error && <p className="text-red-400 text-sm">{error}</p>}
           
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-300 text-white font-bold py-3 px-4 rounded-full transition"
+            className="w-full bg-[#89dceb] hover:bg-[#79c8db] disabled:bg-[#3d3d3d] text-[#1a1a1a] font-semibold py-2.5 rounded-lg transition mt-2"
           >
-            {isLoading ? 'Loading...' : mode === 'login' ? 'Login' : 'Create Account'}
+            {isLoading ? 'Loading...' : mode === 'login' ? 'Sign In' : 'Create Account'}
           </button>
         </form>
         
         <div className="mt-4 text-center">
           <button
-            onClick={() => {
-              setMode(mode === 'login' ? 'register' : 'login');
-              setError('');
-            }}
-            className="text-sm text-emerald-600 hover:text-emerald-700"
+            onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
+            className="text-sm text-[#89dceb] hover:text-[#79c8db] transition"
           >
-            {mode === 'login' ? "Don't have an account? Register" : 'Already have an account? Login'}
+            {mode === 'login' ? "Don't have an account?" : 'Already have an account?'}
           </button>
         </div>
         
         <button
           onClick={onClose}
-          className="mt-4 w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2 px-4 rounded-full transition"
+          className="mt-4 w-full bg-[#333] hover:bg-[#444] text-white font-medium py-2.5 rounded-lg transition"
         >
           Cancel
         </button>

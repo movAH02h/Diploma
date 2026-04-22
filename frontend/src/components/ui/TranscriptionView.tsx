@@ -45,15 +45,16 @@ export default function TranscriptionView({ result }: { result: TranscriptionRes
         messages.push({ speaker, text: seg.text });
       }
     }
-    messages.sort((a, b) => {
-      return 0;
-    });
   } else if (result.full_text) {
     messages = parseTextToSegments(result.full_text);
   }
 
   if (messages.length === 0) {
-    return <p className="text-slate-400 italic text-center py-8">No dialogue segments found</p>;
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <p className="text-[#888]">No dialogue segments found</p>
+      </div>
+    );
   }
 
   const speakerSides = new Map<string, 'left' | 'right'>();
@@ -69,19 +70,23 @@ export default function TranscriptionView({ result }: { result: TranscriptionRes
     <div className="space-y-4">
       {messages.map((msg, idx) => {
         const side = speakerSides.get(msg.speaker)!;
+        const isLeft = side === 'left';
         return (
-          <div key={idx} className={`flex flex-col ${side === 'left' ? 'items-start' : 'items-end'}`}>
-            <span className="text-xs font-semibold text-slate-500 mb-1 px-3">
+          <div 
+            key={idx} 
+            className={`flex flex-col ${isLeft ? 'items-start' : 'items-end'}`}
+          >
+            <span className="text-xs text-[#89dceb] mb-1 px-2">
               {msg.speaker}
             </span>
             <div
-              className={`max-w-[80%] px-4 py-3 rounded-2xl ${
-                side === 'left'
-                  ? 'bg-slate-100 border border-slate-200 rounded-bl-md'
-                  : 'bg-emerald-50 border border-emerald-200 rounded-br-md text-emerald-900'
+              className={`max-w-[75%] px-4 py-3 rounded-2xl ${
+                isLeft
+                  ? 'bg-[#2a2a2a] border border-[#3d3d3d] rounded-bl-md'
+                  : 'bg-[#89dceb]/10 border border-[#89dceb]/30 rounded-br-md'
               }`}
             >
-              <p className="whitespace-pre-wrap">{msg.text}</p>
+              <p className="text-white whitespace-pre-wrap">{msg.text}</p>
             </div>
           </div>
         );
