@@ -9,45 +9,42 @@ interface ParsedSegment {
   end?: number;
 }
 
-function parseTextToSegments(fullText: string): ParsedSegment[] {
-  const segments: ParsedSegment[] = [];
-  const speakerPattern = /^(SPEAKER_\d+|SPEAKER \d+):\s*/gm;
-  const parts = fullText.split(speakerPattern);
-  
-  if (parts.length > 1) {
-    let i = 1;
-    while (i < parts.length) {
-      const speaker = parts[i]?.trim();
-      const text = parts[i + 1]?.trim() || '';
-      if (speaker && text) {
-        segments.push({ speaker, text });
-      }
-      i += 2;
-    }
-  } else {
-    const lines = fullText.split('\n');
-    for (const line of lines) {
-      const trimmed = line.trim();
-      if (trimmed) {
-        segments.push({ speaker: 'UNKNOWN', text: trimmed });
-      }
-    }
-  }
-  return segments;
-}
+function combineSegments(result: TranscriptionResult): ParsedSegment[] {
+  const allSegments: ParsedSegment[] = [];
 
-export default function TranscriptionView({ result }: { result: TranscriptionResult }) {
-  let messages: ParsedSegment[] = [];
-  
   if (result.transcriptions) {
     for (const [speaker, data] of Object.entries(result.transcriptions)) {
       for (const seg of data.segments) {
-        messages.push({ speaker, text: seg.text });
+        allSegments.push({
+          speaker,
+          text: seg.text,
+          start: seg.start,
+          end: seg.end
+        });
       }
     }
-  } else if (result.full_text) {
-    messages = parseTextToSegments(result.full_text);
   }
+
+  allSegments.sort((a, b) => (a.start || 0) - (b.start || 0));
+
+  const combined: ParsedSegment[] = [];
+  for (const seg of allSegments) {
+    if (!seg.text.trim()) continue;
+    
+    const last = combined[combined.length - 1];
+    if (last && last.speaker === seg.speaker) {
+      last.text += ' ' + seg.text;
+      if (seg.end) last.end = seg.end;
+    } else {
+      combined.push({ ...seg });
+    }
+  }
+
+  return combined;
+}
+
+export default function TranscriptionView({ result }: { result: TranscriptionResult }) {
+  const messages = combineSegments(result);
 
   if (messages.length === 0) {
     return (

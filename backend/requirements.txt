@@ -32,6 +32,7 @@ python-multipart
 uvicorn[standard]
 fastapi
 sqlalchemy
+requests
 
 # Авторизация
 python-jose[cryptography]

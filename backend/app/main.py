@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.audio_processing import router as audio_processing_router
 from app.api.v1.results_processing import router as results_processing_router
 from app.api.v1.auth import router as auth_router
+from app.api.v1.llama import router as llama_router
 from app.schemas import settings
 from app.models import model_manager
 from app.database import engine
@@ -47,6 +48,7 @@ app.add_middleware(
 app.include_router(audio_processing_router, prefix="/api/v1")
 app.include_router(results_processing_router, prefix="/api/v1")
 app.include_router(auth_router)
+app.include_router(llama_router, prefix="/api/v1")
 
 frontend_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../frontend"))
 if os.path.exists(frontend_path):

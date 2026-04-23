@@ -64,12 +64,10 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
 
   return (
     <div 
-      className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
-      onClick={onClose}
+      className="fixed inset-0 flex items-center justify-center z-50"
     >
       <div 
         className="bg-[#252525] rounded-2xl p-8 max-w-md w-[90%] shadow-2xl border border-[#3d3d3d]"
-        onClick={(e) => e.stopPropagation()}
       >
         <h3 className="text-2xl font-bold text-white mb-6 text-center">
           {mode === 'login' ? 'Sign In' : 'Create Account'}

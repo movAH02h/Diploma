@@ -1,6 +1,6 @@
 import { UploadResponse, TranscriptionResult, HistoryItem } from './types';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
 
 function getAuthHeaders(): HeadersInit {
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
@@ -51,4 +51,24 @@ export async function deleteAllHistory(): Promise<void> {
     headers: getAuthHeaders(),
   });
   if (!res.ok) throw new Error('Failed to delete history');
+}
+
+export async function summarizeTranscription(resultId: number, mode: 'summary' | 'key_points'): Promise<{ result: string }> {
+  const res = await fetch(`${API_BASE}/api/v1/llama/summarize`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+    body: JSON.stringify({ result_id: resultId, mode }),
+  });
+  if (!res.ok) throw new Error('Failed to summarize');
+  return res.json();
+}
+
+export async function askQuestion(resultId: number, question: string): Promise<{ result: string }> {
+  const res = await fetch(`${API_BASE}/api/v1/llama/ask`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+    body: JSON.stringify({ result_id: resultId, question }),
+  });
+  if (!res.ok) throw new Error('Failed to ask question');
+  return res.json();
 }

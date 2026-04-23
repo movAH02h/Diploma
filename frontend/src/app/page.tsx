@@ -8,6 +8,8 @@ import { useAuth } from '@/context/AuthContext';
 import { TranscriptionResult } from '@/lib/types';
 import { useTranscription } from '@/hooks/useTranscription';
 import { useHistory } from '@/hooks/useHistory';
+import { useLlama } from '@/hooks/useLlama';
+import LlamaPanel from '@/components/ui/LlamaPanel';
 import { uploadAudio } from '@/lib/api';
 
 export default function Home() {
@@ -23,6 +25,7 @@ export default function Home() {
   const { user, logout, isLoading, setOnAuthSuccess } = useAuth();
   const { isProcessing, transcribe, reset } = useTranscription();
   const { history, loadHistory, clearHistory } = useHistory();
+  const llama = useLlama(currentResult?.id || null);
 
   useEffect(() => {
     if (!isLoading && user) {
@@ -296,6 +299,20 @@ export default function Home() {
               result={currentResult} 
               isLoading={false}
             />
+            
+            {currentResult && (
+              <LlamaPanel
+                resultId={currentResult.id}
+                onGenerateSummary={llama.generateSummary}
+                onExtractKeyPoints={llama.extractKeyPoints}
+                onAsk={llama.ask}
+                isLoading={llama.isLoading}
+                summary={llama.summary}
+                keyPoints={llama.keyPoints}
+                answer={llama.answer}
+                error={llama.error}
+              />
+            )}
           </div>
         </main>
       </div>

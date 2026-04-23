@@ -21,8 +21,12 @@ class DiarizationService(BaseService):
             "waveform": waveform_tensor,
             "sample_rate": sr
         })
+        print("outputs:")
+        print(outputs)
 
         predicted_diarization = outputs.speaker_diarization
+        print("predicted_diarization:")
+        print(predicted_diarization)
 
         logger.debug("Dividing the audio recording into segments...")
         diarization_segments = []
@@ -35,6 +39,12 @@ class DiarizationService(BaseService):
                     continue
                 
                 speakers.add(speaker)
+                print({
+                    'speaker': speaker,
+                    'start': segment.start,
+                    'end': segment.end,
+                    'segment': segment
+                })
                 diarization_segments.append({
                     'speaker': speaker,
                     'start': segment.start,
