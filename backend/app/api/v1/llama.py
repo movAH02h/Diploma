@@ -7,7 +7,7 @@ from app.services.llama import llama_service
 from app.api.v1.auth import get_current_user
 from app.models import User
 
-router = APIRouter()
+router = APIRouter(prefix="/llama")
 
 
 class SummarizeRequest(BaseModel):

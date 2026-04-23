@@ -59,7 +59,10 @@ export async function summarizeTranscription(resultId: number, mode: 'summary' |
     headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
     body: JSON.stringify({ result_id: resultId, mode }),
   });
-  if (!res.ok) throw new Error('Failed to summarize');
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`Failed to summarize: ${res.status} ${errorText}`);
+  }
   return res.json();
 }
 
@@ -69,6 +72,9 @@ export async function askQuestion(resultId: number, question: string): Promise<{
     headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
     body: JSON.stringify({ result_id: resultId, question }),
   });
-  if (!res.ok) throw new Error('Failed to ask question');
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(`Failed to ask question: ${res.status} ${errorText}`);
+  }
   return res.json();
 }
