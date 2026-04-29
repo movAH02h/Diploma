@@ -199,7 +199,7 @@ Diploma/
 
 ## Разработка
 
-### Лinting
+### Linting
 
 ```bash
 # Python
@@ -217,13 +217,3 @@ npm run lint
 cd frontend
 npm run build
 ```
-
-## Исследовательская часть
-
-- [Результаты Pyannote](https://colab.research.google.com/drive/1j0MZ67onV5o-nB59WAtviugh7QKwokz4)
-- [Результаты NVIDIA NeMo](https://colab.research.google.com/drive/1kPN60q5kYNOA1UpgHUx02mKHl9PtWg8t)
-- [Сравнительный анализ](https://colab.research.google.com/drive/1EG3ng3IGTOJgHTGfPZLgoUuuzgezMLPH)
-
-## Лицензия
-
-MIT

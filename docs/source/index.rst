@@ -1,17 +1,30 @@
-.. Diploma documentation master file, created by
-   sphinx-quickstart on Sat Mar 28 21:22:18 2026.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+Meeting Studio Documentation
+============================
 
-Diploma documentation
-=====================
+.. Important::
+   Данная документация не содержит инструкций по запуску, настройке или дублирования README.md. Для быстрого старта обратитесь к README.md проекта.
 
-Welcome to the Diploma documentation. Here you can find all the information about the modules, services, and instructions for use.
+Общее описание проекта
+-----------------------
+
+Meeting Studio — веб-приложение для **автоматической транскрибации аудиозаписей встреч с AI-анализом**. Система объединяет распознавание речи, диаризацию дикторов и крупные языковые модели (LLM) для структурирования информации из встреч.
+
+Основные возможности:
+- **Транскрибация аудио**: Конвертация аудиозаписей встреч в текст с использованием OpenAI Whisper
+- **Диаризация дикторов**: Выделение и идентификация говорящих в записи через PyAnnote
+- **AI-анализ**: Генерация сводок, извлечение ключевых тезисов, ответы на вопросы по транскрибации с использованием Llama 3 (через Ollama)
+- **Аутентификация пользователей**: Регистрация и вход в систему
+- **История операций**: Хранение, просмотр и удаление прошлых транскрибаций
+
+Технологический стек:
+- **Бэкенд**: FastAPI (Python), SQLAlchemy, Ollama (Llama 3), Whisper, PyAnnote
+- **Фронтенд**: Next.js 14, React, TypeScript, Tailwind CSS
+- **База данных**: SQLite (по умолчанию)
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Основные разделы:
 
-   api_v1
-   repository
-   services
+   backend
+   frontend
+   config
