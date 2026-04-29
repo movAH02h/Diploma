@@ -59,6 +59,29 @@ cd frontend
 npm install
 ```
 
+### 3. Ollama (для Llama 3)
+
+#### Установка Ollama
+
+```bash
+# Linux
+curl -fsSL https://ollama.com/install.sh | sh
+```
+
+или скачать с https://ollama.com/download
+
+#### Скачать модель Llama 3
+
+```bash
+ollama pull llama3
+```
+
+#### Запуск Ollama
+
+```bash
+ollama serve
+```
+
 ### 3. Запуск
 
 #### Backend (в одном терминале)
@@ -75,6 +98,29 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 cd frontend
 npm run dev
 ```
+
+## Переменные окружения
+
+### Бэкенд (опционально)
+
+- `OLLAMA_BASE_URL` — URL Ollama (по умолчанию http://localhost:11434)
+- `SECRET_KEY` — ключ для JWT
+- `DATABASE_URL` — URL базы данных
+
+### Фронтенд (опционально)
+
+- `NEXT_PUBLIC_API_URL` — URL API (по умолчанию http://localhost:8000)
+
+## Использование
+
+1. Зарегистрируйтесь / войдите
+2. Загрузите аудиофайл (.mp3, .wav и т.д.)
+3. Выберите модель (base/pro)
+4. Нажмите Transcribe
+5. После завершения используйте Llama 3 панель:
+   - Summary — краткая сводка
+   - Key Points — основные идеи
+   - Ask — задать вопрос по диалогу
 
 Откройте http://localhost:3000 в браузере.
 
