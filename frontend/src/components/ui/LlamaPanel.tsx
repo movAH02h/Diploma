@@ -2,6 +2,11 @@
 
 import { useState } from 'react';
 
+interface QAItem {
+  question: string;
+  answer: string;
+}
+
 interface LlamaPanelProps {
   resultId: number | null;
   onGenerateSummary: () => Promise<void>;
@@ -10,7 +15,7 @@ interface LlamaPanelProps {
   isLoading: boolean;
   summary: string | null;
   keyPoints: string | null;
-  answer: string | null;
+  qaHistory: QAItem[];
   error: string | null;
 }
 
@@ -22,7 +27,7 @@ export default function LlamaPanel({
   isLoading,
   summary,
   keyPoints,
-  answer,
+  qaHistory,
   error,
 }: LlamaPanelProps) {
   const [question, setQuestion] = useState('');
@@ -101,12 +106,16 @@ export default function LlamaPanel({
         </form>
       </div>
 
-      {answer && (
-        <div className="mt-4 p-3 bg-[#1a1a1a] rounded-lg border border-[#3d3d3d]">
-          <h4 className="text-xs text-[#89dceb] mb-2">Answer</h4>
-          <p className="text-white text-sm whitespace-pre-wrap">{answer}</p>
-        </div>
-      )}
+       {qaHistory.length > 0 && (
+         <div className="mt-4 max-h-64 overflow-y-auto space-y-3 pr-2">
+           {qaHistory.map((item, index) => (
+             <div key={index} className="p-3 bg-[#1a1a1a] rounded-lg border border-[#3d3d3d]">
+               <h4 className="text-xs text-[#89dceb] mb-1">Q: {item.question}</h4>
+               <p className="text-white text-sm whitespace-pre-wrap">{item.answer}</p>
+             </div>
+           ))}
+         </div>
+       )}
     </div>
   );
 }

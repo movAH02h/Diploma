@@ -3,11 +3,16 @@
 import { useState } from 'react';
 import { summarizeTranscription, askQuestion } from '@/lib/api';
 
+interface QAPair {
+  question: string;
+  answer: string;
+}
+
 export function useLlama(resultId: number | null) {
   const [isLoading, setIsLoading] = useState(false);
   const [summary, setSummary] = useState<string | null>(null);
   const [keyPoints, setKeyPoints] = useState<string | null>(null);
-  const [answer, setAnswer] = useState<string | null>(null);
+  const [qaHistory, setQaHistory] = useState<QAPair[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const generateSummary = async () => {
@@ -44,7 +49,7 @@ export function useLlama(resultId: number | null) {
     setError(null);
     try {
       const { result } = await askQuestion(resultId, question);
-      setAnswer(result);
+      setQaHistory(prev => [...prev, { question, answer: result }]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error');
     } finally {
@@ -55,7 +60,7 @@ export function useLlama(resultId: number | null) {
   const reset = () => {
     setSummary(null);
     setKeyPoints(null);
-    setAnswer(null);
+    setQaHistory([]);
     setError(null);
   };
 
@@ -63,7 +68,7 @@ export function useLlama(resultId: number | null) {
     isLoading,
     summary,
     keyPoints,
-    answer,
+    qaHistory,
     error,
     generateSummary,
     extractKeyPoints,

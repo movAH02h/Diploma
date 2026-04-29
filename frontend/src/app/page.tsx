@@ -138,7 +138,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#1a1a1a] flex flex-col">
-      <header className="h-14 bg-[#252525] border-b border-[#3d3d3d] flex items-center justify-between px-4 shrink-0">
+      <header className="sticky top-0 z-50 h-14 bg-[#252525] border-b border-[#3d3d3d] flex items-center justify-between px-4 shrink-0">
         <div className="flex items-center gap-4">
           <button
             onClick={() => setShowHistory(!showHistory)}
@@ -199,7 +199,7 @@ export default function Home() {
         )}
 
         {/* Main content */}
-        <main className="flex-1 flex flex-col items-center pt-20 px-4 overflow-y-auto">
+        <main className="flex-1 flex flex-col items-center pt-4 px-4 overflow-y-auto">
           <div className="w-full max-w-3xl">
             {/* Кнопки по центру */}
             <div className="flex items-center justify-center gap-4 mb-6">
@@ -309,7 +309,7 @@ export default function Home() {
                 isLoading={llama.isLoading}
                 summary={llama.summary}
                 keyPoints={llama.keyPoints}
-                answer={llama.answer}
+                qaHistory={llama.qaHistory}
                 error={llama.error}
               />
             )}
