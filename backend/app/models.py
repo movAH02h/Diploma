@@ -30,7 +30,16 @@ class ModelManager():
         logger.debug("Base diarization model downloaded successfully!")
 
         if os.path.exists(settings.SEGMENTATION_MODEL_PRO):
-            base_params = self._diarization_base.parameters(instantiated=True)
+            custom_params = {
+                "segmentation": {
+                    "min_duration_off": 0.3537883320126253,
+                },
+                "clustering": {
+                    "method": 'centroid',
+                    "min_cluster_size": 19,
+                    "threshold": 0.7172270484758725,
+                }
+            }
             segmentation_model = Model.from_pretrained(
                 settings.SEGMENTATION_MODEL_PRO
             )
@@ -41,7 +50,7 @@ class ModelManager():
                 embedding_exclude_overlap=self._diarization_base.embedding_exclude_overlap,
                 clustering="AgglomerativeClustering"
             )
-            self._diarization_pro.instantiate(base_params)
+            self._diarization_pro.instantiate(custom_params)
             logger.debug("Pro diarization model downloaded successfully!")
         else:
             logger.debug(f"PRO segmentation model not found at {settings.SEGMENTATION_MODEL_PRO}, using base model for pro requests")
