@@ -297,7 +297,7 @@ export default function Home() {
 
             <ResultPanel 
               result={currentResult} 
-              isLoading={false}
+              isLoading={isProcessing}
             />
             
             {currentResult && (
