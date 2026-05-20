@@ -2,13 +2,15 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir --timeout=100 --retries=5 -r requirements.txt && pip uninstall -y torchcodec || true
 RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir --timeout=300 --retries=5 -r requirements.txt && pip uninstall -y torchcodec || true
 
 COPY . .
 
 ENV PYTHONPATH=/app
+ENV HF_HUB_ENABLE_HF_TRANSFER=0
 
 EXPOSE 8000
 

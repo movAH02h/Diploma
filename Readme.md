@@ -1,14 +1,14 @@
 # Meeting Studio — Транскрибация и диаризация аудио
 
-Веб-приложение для автоматической транскрибации аудиозаписей митингов с определением спикеров (диаризацией).
+Веб-приложение для автоматической транскрибации аудиозаписей митингов с определением спикеров.
 
 ## Возможности
 
-- 🎤 Транскрибация аудио с помощью Whisper (OpenAI)
-- 👥 Определение спикеров с помощью PyAnnote
-- 📊 История транскрибаций
-- 🖥️ Удобный веб-интерфейс
-- 🤖 AI-анализ (сводки, тезисы, ответы на вопросы) через Llama 3
+- Транскрибация аудио с помощью Whisper (OpenAI)
+- Определение спикеров с помощью PyAnnote
+- История транскрибаций
+- Удобный веб-интерфейс
+- AI-анализ (сводки, тезисы, ответы на вопросы) через Llama 3
 
 ## Требования
 
@@ -35,19 +35,12 @@ cd backend
 cp .env.example .env
 # Укажите HF_TOKEN в .env
 
-# Создание виртуального окружения
+# Создание виртуального окружения и установка зависимостей
 python -m venv .venv
 source .venv/bin/activate
-
-# Установка зависимостей
 pip install -r requirements.txt
-```
 
-Запуск:
-
-```bash
-cd backend
-source .venv/bin/activate
+# Запуск
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
@@ -56,12 +49,6 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```bash
 cd frontend
 npm install
-```
-
-Запуск:
-
-```bash
-cd frontend
 npm run dev
 ```
 
@@ -107,8 +94,11 @@ ollama serve
 cp backend/.env.example backend/.env
 # Укажите HF_TOKEN в backend/.env
 
-# Запуск
-docker-compose up -d
+# Скачивание модели Llama 3 (выполнить один раз, ~5GB)
+docker compose --profile init run ollama-init
+
+# Запуск всех сервисов
+docker compose up -d
 ```
 
 Доступ:
@@ -116,11 +106,12 @@ docker-compose up -d
 - Frontend: http://localhost:3000
 - Backend: http://localhost:8000
 - API docs: http://localhost:8000/docs
+- Ollama API: http://localhost:11434
 
 Остановка:
 
 ```bash
-docker-compose down
+docker compose down
 ```
 
 ## Структура проекта
