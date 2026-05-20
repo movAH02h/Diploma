@@ -1,4 +1,4 @@
-Licensing
+Лицензии
 =========
 
 MIT License
