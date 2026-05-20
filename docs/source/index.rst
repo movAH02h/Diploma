@@ -28,3 +28,6 @@ Meeting Studio — веб-приложение для **автоматическ
    backend
    frontend
    config
+   research
+   deployment
+   licensing

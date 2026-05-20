@@ -128,99 +128,88 @@ API Роуты
 
 Все роуты находятся под префиксом ``/api/v1`` (кроме роутов аутентификации, которые под ``/api/v1/auth``):
 
+Аутпоинты возвращают JSON. При ошибках — HTTPException с кодом и detail.
+
 Аутентификация
 ~~~~~~~~~~~~~~
 
 .. list-table::
-   :widths: 25 10 30 20 15
+   :widths: 25 15 30 40
    :header-rows: 1
 
    * - Эндпоинт
      - Метод
      - Описание
-     - Аутентификация
-     - Тело запроса
+     - Тело запроса / Ответ
    * - /api/v1/auth/register
      - POST
      - Регистрация нового пользователя
-     - Нет
-     - {username, password}
+     - ``{email, username, password}`` → ``{id, email, username, created_at}``
    * - /api/v1/auth/login
      - POST
      - Вход, возврат токена
-     - Нет
-     - {username, password}
+     - ``{email, password}`` → ``{access_token, token_type}``
    * - /api/v1/auth/me
      - GET
      - Информация о текущем пользователе
-     - Да
-     - Нет
+     - Заголовок ``Authorization: Bearer <token>`` → ``{id, email, username, created_at}``
 
 Обработка аудио
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 .. list-table::
-   :widths: 25 10 30 20 15
+   :widths: 25 15 30 40
    :header-rows: 1
 
    * - Эндпоинт
      - Метод
      - Описание
-     - Аутентификация
-     - Тело запроса
+     - Тело / Ответ
    * - /api/v1/process_audio
      - POST
      - Загрузка и транскрибация аудио
-     - Да
-     - FormData: file, model_type (base/pro)
+     - FormData: ``file`` + ``model_type`` (base/pro) → ``{id, ...}``
 
 Управление результатами
 ~~~~~~~~~~~~~~~~~~~~~~
 
 .. list-table::
-   :widths: 25 10 30 20 15
+   :widths: 25 15 30 40
    :header-rows: 1
 
    * - Эндпоинт
      - Метод
      - Описание
-     - Аутентификация
-     - Тело запроса
+     - Ответ
    * - /api/v1/results
      - GET
      - Список всех результатов пользователя
-     - Да
-     - Нет
-   * - /api/v1/results/{id}
+     - ``[{id, ...}, ...]``
+   * - /api/v1/results/{result_id}
      - GET
      - Получение конкретного результата
-     - Да
-     - Нет
+     - ``{id, full_text, segments, ...}``
    * - /api/v1/results
      - DELETE
      - Удаление всех результатов пользователя
-     - Да
-     - Нет
+     - ``{status, deleted}``
 
 Llama 3 Анализ
-~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 .. list-table::
-   :widths: 25 10 30 20 15
+   :widths: 25 15 30 40
    :header-rows: 1
 
    * - Эндпоинт
      - Метод
      - Описание
-     - Аутентификация
-     - Тело запроса
+     - Тело / Ответ
    * - /api/v1/llama/summarize
      - POST
      - Генерация сводки или ключевых тезисов
-     - Да
-     - {result_id: int, mode: "summary"/"key_points"}
+     - ``{result_id, mode}`` (mode: "summary" | "key_points") → ``{result}``
    * - /api/v1/llama/ask
      - POST
      - Ответ на вопрос по транскрибации
-     - Да
-     - {result_id: int, question: str}
+     - ``{result_id, question}`` → ``{result}``

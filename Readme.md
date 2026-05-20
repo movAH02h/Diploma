@@ -8,6 +8,7 @@
 - 👥 Определение спикеров с помощью PyAnnote
 - 📊 История транскрибаций
 - 🖥️ Удобный веб-интерфейс
+- 🤖 AI-анализ (сводки, тезисы, ответы на вопросы) через Llama 3
 
 ## Требования
 
@@ -25,23 +26,15 @@ git clone <repository-url>
 cd Diploma
 ```
 
-### 2. Настройка окружения
-
-#### Backend
+### 2. Backend
 
 ```bash
 cd backend
 
-# Копирование примера конфигурации
+# Копирование и настройка конфигурации
 cp .env.example .env
+# Укажите HF_TOKEN в .env
 
-# Редактирование .env — добавьте ваш HuggingFace токен
-nano .env
-```
-
-Получить токен можно на https://huggingface.co/settings/tokens
-
-```bash
 # Создание виртуального окружения
 python -m venv .venv
 source .venv/bin/activate
@@ -50,18 +43,31 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-#### Frontend
+Запуск:
+
+```bash
+cd backend
+source .venv/bin/activate
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+### 3. Frontend
 
 ```bash
 cd frontend
-
-# Установка зависимостей
 npm install
 ```
 
-### 3. Ollama (для Llama 3)
+Запуск:
 
-#### Установка Ollama
+```bash
+cd frontend
+npm run dev
+```
+
+### 4. Ollama (для Llama 3)
+
+Установка:
 
 ```bash
 # Linux
@@ -70,78 +76,48 @@ curl -fsSL https://ollama.com/install.sh | sh
 
 или скачать с https://ollama.com/download
 
-#### Скачать модель Llama 3
+Загрузка модели:
 
 ```bash
 ollama pull llama3
 ```
 
-#### Запуск Ollama
+Запуск сервера:
 
 ```bash
 ollama serve
 ```
 
-### 3. Запуск
-
-#### Backend (в одном терминале)
-
-```bash
-cd backend
-source .venv/bin/activate
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-#### Frontend (в другом терминале)
-
-```bash
-cd frontend
-npm run dev
-```
-
-## Переменные окружения
-
-### Бэкенд (опционально)
-
-- `OLLAMA_BASE_URL` — URL Ollama (по умолчанию http://localhost:11434)
-- `SECRET_KEY` — ключ для JWT
-- `DATABASE_URL` — URL базы данных
-
-### Фронтенд (опционально)
-
-- `NEXT_PUBLIC_API_URL` — URL API (по умолчанию http://localhost:8000)
-
 ## Использование
 
-1. Зарегистрируйтесь / войдите
-2. Загрузите аудиофайл (.mp3, .wav и т.д.)
-3. Выберите модель (base/pro)
-4. Нажмите Transcribe
-5. После завершения используйте Llama 3 панель:
+1. Откройте http://localhost:3000 в браузере
+2. Зарегистрируйтесь / войдите
+3. Загрузите аудиофайл (.mp3, .wav и т.д.)
+4. Выберите модель (base/pro)
+5. Нажмите Transcribe
+6. После завершения используйте Llama 3 панель:
    - Summary — краткая сводка
    - Key Points — основные идеи
    - Ask — задать вопрос по диалогу
 
-Откройте http://localhost:3000 в браузере.
-
 ## Docker
 
-### Сборка и запуск
-
 ```bash
-# Копирование конфигурации
+# Настройка
 cp backend/.env.example backend/.env
-# Добавьте ваш HF_TOKEN в backend/.env
+# Укажите HF_TOKEN в backend/.env
 
-# Сборка и запуск
+# Запуск
 docker-compose up -d
 ```
 
-- Backend: http://localhost:8000
+Доступ:
+
 - Frontend: http://localhost:3000
+- Backend: http://localhost:8000
 - API docs: http://localhost:8000/docs
 
-### Остановка
+Остановка:
 
 ```bash
 docker-compose down
@@ -177,26 +153,6 @@ Diploma/
 └── docker-compose.yml     # Docker Compose конфиг
 ```
 
-## API Endpoints
-
-| Метод | Путь | Описание |
-|-------|------|----------|
-| POST | `/api/v1/process_audio` | Транскрибация аудио |
-| GET | `/api/v1/results` | Список всех результатов |
-| GET | `/api/v1/results/{id}` | Получить результат по ID |
-| DELETE | `/api/v1/results` | Удалить все результаты |
-
-## Настройки
-
-Настройки приложения находятся в `backend/app/schemas.py`:
-
-| Параметр | Описание | Значение по умолчанию |
-|----------|---------|---------------------|
-| `WHISPER_MODEL` | Модель Whisper | base.en |
-| `MAX_FILE_SIZE` | Макс. размер файла | 2 MB |
-| `ALLOWED_EXTENSIONS` | Допустимые расширения | .wav, .mp3, .ogg, .flac |
-| `DIARIZATION_MODEL_BASE_NAME` | Модель диаризации | pyannote/speaker-diarization-3.1 |
-
 ## Разработка
 
 ### Linting
@@ -217,3 +173,23 @@ npm run lint
 cd frontend
 npm run build
 ```
+
+## Переменные окружения
+
+### Backend (опционально)
+
+| Переменная | По умолчанию | Описание |
+|------------|--------------|----------|
+| `HF_TOKEN` | — | Токен HuggingFace (обязательно) |
+| `OLLAMA_BASE_URL` | http://localhost:11434 | URL Ollama |
+| `SECRET_KEY` | генерируется | Ключ для JWT |
+| `DATABASE_URL` | sqlite:///./audio_results.db | URL базы данных |
+| `WHISPER_MODEL` | base.en | Модель Whisper |
+
+### Frontend (опционально)
+
+| Переменная | По умолчанию | Описание |
+|------------|--------------|----------|
+| `NEXT_PUBLIC_API_URL` | http://localhost:8000 | URL API |
+
+Подробнее о всех настройках — в документации (docs/).
