@@ -5,7 +5,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir --timeout=300 --retries=5 -r requirements.txt && pip uninstall -y torchcodec || true
+RUN pip install --no-cache-dir --retries=5 -r requirements.txt && pip uninstall -y torchcodec || true
 
 COPY . .
 
