@@ -87,12 +87,11 @@ ollama serve
    - Key Points — основные идеи
    - Ask — задать вопрос по диалогу
 
-## Docker
+## Docker (В разработке)
 
 ```bash
-# Настройка
+# Настройка HF_TOKEN
 cp backend/.env.example backend/.env
-# Укажите HF_TOKEN в backend/.env
 
 # Скачивание модели Llama 3 (выполнить один раз, ~5GB)
 docker compose --profile init run ollama-init
