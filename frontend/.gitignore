@@ -6,6 +6,8 @@ node_modules/
 out/
 
 # Environment
+.env
+.env.example
 .env*.local
 
 # IDE

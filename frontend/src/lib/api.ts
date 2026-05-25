@@ -63,7 +63,15 @@ export async function summarizeTranscription(resultId: number, mode: 'summary' |
     const errorText = await res.text();
     throw new Error(`Failed to summarize: ${res.status} ${errorText}`);
   }
-  return res.json();
+  const text = await res.text();
+  if (!text) {
+    throw new Error('Empty response from server');
+  }
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    throw new Error(`Invalid JSON response: ${text}`);
+  }
 }
 
 export async function askQuestion(resultId: number, question: string): Promise<{ result: string }> {

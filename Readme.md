@@ -14,6 +14,8 @@
 
 - Python 3.11+
 - Node.js 20+
+- Next.js 14+
+- npm
 - FFmpeg
 - HuggingFace токен для модели диаризации
 
@@ -40,6 +42,9 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
+# Если при запуске ошибка с torchcodec:
+pip uninstall -y torchcodec
+
 # Запуск
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
@@ -48,6 +53,13 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 ```bash
 cd frontend
+
+# Копирование и настройка конфигурации
+cp .env.example .env
+# Убедитесь, что NEXT_PUBLIC_API_URL=http://localhost:8000 (для локального запуска)
+# При использовании Docker эта переменная задается автоматически
+
+# Установка зависимостей и запуск
 npm install
 npm run dev
 ```
@@ -176,7 +188,7 @@ npm run build
 | `DATABASE_URL` | sqlite:///./audio_results.db | URL базы данных |
 | `WHISPER_MODEL` | base.en | Модель Whisper |
 
-### Frontend (опционально)
+### Frontend
 
 | Переменная | По умолчанию | Описание |
 |------------|--------------|----------|
