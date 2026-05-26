@@ -7,7 +7,6 @@ out/
 
 # Environment
 .env
-.env.example
 .env*.local
 
 # IDE
